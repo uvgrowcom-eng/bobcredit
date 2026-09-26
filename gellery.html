@@ -3,181 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>File Browser</title>
+    <title>Folder Browser</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding: 0 0 40px;
         }
 
         /* ===== HEADER ===== */
         .header {
-            position: sticky;
-            top: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 16px;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
+            padding: 20px 16px 16px;
+            text-align: center;
         }
 
         .header h1 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #8e8e93;
+        }
+
+        /* ===== STATUS BAR ===== */
+        .status-bar {
+            max-width: 500px;
+            margin: 0 auto 16px;
+            padding: 12px 16px;
+            background: #1c1c1e;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .status-bar.success {
+            background: rgba(52, 168, 83, 0.12);
+            border: 1px solid rgba(52, 168, 83, 0.3);
+            color: #34A853;
+        }
+
+        .status-bar.error {
+            background: rgba(255, 59, 48, 0.12);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #FF3B30;
+        }
+
+        .status-bar.warning {
+            background: rgba(255, 193, 7, 0.12);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #FFC107;
+        }
+
+        .status-info {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1;
+            min-width: 0;
         }
 
-        .folder-name {
-            font-size: 12px;
-            color: #8e8e93;
-            font-weight: 400;
-            max-width: 180px;
+        .status-folder {
+            font-weight: 600;
+            color: #fff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .view-toggle {
-            display: flex;
-            gap: 4px;
-            background: #1c1c1e;
-            border-radius: 10px;
-            padding: 3px;
-        }
-
-        .view-btn {
+        .status-btn {
             padding: 6px 12px;
             border: none;
-            background: transparent;
-            color: #8e8e93;
-            font-size: 14px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .view-btn.active {
             background: #2c2c2e;
             color: #fff;
-        }
-
-        /* Search bar */
-        .search-wrap {
-            position: relative;
-            margin-bottom: 12px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px 12px 40px;
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: #1a73e8;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8e8e93;
-            font-size: 16px;
-            pointer-events: none;
-        }
-
-        /* Filter chips */
-        .filter-chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-
-        .filter-chips::-webkit-scrollbar { display: none; }
-
-        .chip {
-            flex-shrink: 0;
-            padding: 8px 14px;
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
-            color: #8e8e93;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
         }
 
-        .chip.active {
+        .status-btn.primary {
             background: linear-gradient(45deg, #f09433, #dc2743);
-            border-color: transparent;
-            color: #fff;
-        }
-
-        .chip .chip-count {
-            background: rgba(0,0,0,0.3);
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        /* Sort dropdown */
-        .sort-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-        }
-
-        .file-count {
-            font-size: 12px;
-            color: #8e8e93;
-        }
-
-        .sort-select {
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            color: #fff;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-family: inherit;
-            outline: none;
-            cursor: pointer;
         }
 
         /* ===== MAIN BUTTON ===== */
         .open-btn-wrap {
-            padding: 20px 16px;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            padding: 0 16px;
         }
 
         .open-btn {
@@ -200,19 +130,26 @@
             transition: transform 0.15s;
         }
 
-        .open-btn:active { transform: scale(0.97); }
+        .open-btn:active {
+            transform: scale(0.97);
+        }
+
+        .open-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         @keyframes gradientMove {
             0%, 100% { background-position: 0% 50%; }
-            50%      { background-position: 100% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        /* ===== GRID VIEW ===== */
+        /* ===== FILE GRID ===== */
         .file-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 3px;
-            padding: 0 12px;
+            padding: 0 16px;
             max-width: 600px;
             margin: 0 auto;
         }
@@ -230,7 +167,9 @@
             transition: transform 0.15s;
         }
 
-        .file-item:active { transform: scale(0.95); }
+        .file-item:active {
+            transform: scale(0.95);
+        }
 
         .file-item img {
             width: 100%;
@@ -249,7 +188,7 @@
             bottom: 6px;
             left: 6px;
             padding: 2px 6px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             color: #fff;
             font-size: 9px;
             font-weight: 700;
@@ -258,117 +197,16 @@
             letter-spacing: 0.5px;
         }
 
-        .file-item .file-duration {
-            position: absolute;
-            bottom: 6px;
-            right: 6px;
-            padding: 2px 6px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-            border-radius: 4px;
+        .file-item.folder .file-icon {
+            font-size: 40px;
+            opacity: 1;
         }
-
-        .file-item .select-badge {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 22px;
-            height: 22px;
-            background: #dc2743;
-            color: #fff;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            border: 2px solid #fff;
-        }
-
-        .file-item.selected {
-            outline: 3px solid #dc2743;
-            outline-offset: -3px;
-        }
-
-        .file-item.selected .select-badge { display: flex; }
-
-        /* ===== LIST VIEW ===== */
-        .file-list {
-            padding: 0 12px;
-            max-width: 600px;
-            margin: 0 auto;
-            display: none;
-        }
-
-        .file-list.show { display: block; }
-        .file-grid.hide { display: none; }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .list-item:active { background: #1c1c1e; }
-
-        .list-item.selected {
-            background: rgba(220, 39, 67, 0.15);
-            border: 1px solid rgba(220, 39, 67, 0.4);
-        }
-
-        .list-thumb {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #1c1c1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 24px;
-        }
-
-        .list-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .list-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .list-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .list-meta {
-            font-size: 12px;
-            color: #8e8e93;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .list-meta .dot { opacity: 0.5; }
 
         /* ===== LOADING ===== */
         .loading {
             text-align: center;
             padding: 60px 20px;
+            grid-column: 1 / -1;
         }
 
         .spinner {
@@ -381,7 +219,9 @@
             margin: 0 auto 16px;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         .loading-text {
             color: #8e8e93;
@@ -391,7 +231,8 @@
         /* ===== EMPTY ===== */
         .empty {
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
         }
 
         .empty-icon {
@@ -409,60 +250,15 @@
         .empty-sub {
             font-size: 13px;
             color: #8e8e93;
-        }
-
-        /* ===== BOTTOM BAR ===== */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
-        }
-
-        .bottom-bar.show { display: flex; }
-
-        .selected-info {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .selected-info span {
-            color: #dc2743;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .action-btn.secondary {
-            background: #2c2c2e;
+            line-height: 1.5;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
         /* Toast */
         .toast {
             position: fixed;
-            bottom: 90px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             background: #2c2c2e;
@@ -472,13 +268,32 @@
             font-size: 13px;
             z-index: 9999;
             animation: toastIn 0.3s;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             white-space: nowrap;
         }
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Info box */
+        .info-box {
+            max-width: 500px;
+            margin: 16px auto;
+            padding: 14px 16px;
+            background: rgba(26, 115, 232, 0.08);
+            border: 1px solid rgba(26, 115, 232, 0.25);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #6BA3E8;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-box strong {
+            color: #1a73e8;
         }
     </style>
 </head>
@@ -486,141 +301,136 @@
 
     <!-- HEADER -->
     <div class="header">
-        <div class="header-top">
-            <div>
-                <h1>📁 Files</h1>
-                <div class="folder-name" id="folderName">Koi folder select nahi kiya</div>
-            </div>
-            <div class="view-toggle">
-                <button class="view-btn active" id="gridViewBtn" title="Grid">▦</button>
-                <button class="view-btn" id="listViewBtn" title="List">☰</button>
-            </div>
-        </div>
+        <h1>📁 Folder Browser</h1>
+        <p>Ek baar folder select karo — saari files dikhengi</p>
+    </div>
 
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
+    <!-- STATUS BAR -->
+    <div class="status-bar" id="statusBar">
+        <div class="status-info">
+            <span id="statusIcon">📂</span>
+            <span id="statusText">Koi folder select nahi kiya</span>
         </div>
-
-        <div class="filter-chips" id="filterChips">
-            <div class="chip active" data-filter="all">
-                All <span class="chip-count" id="countAll">0</span>
-            </div>
-            <div class="chip" data-filter="image">
-                🖼️ Images <span class="chip-count" id="countImages">0</span>
-            </div>
-            <div class="chip" data-filter="video">
-                🎬 Videos <span class="chip-count" id="countVideos">0</span>
-            </div>
-            <div class="chip" data-filter="audio">
-                🎵 Audio <span class="chip-count" id="countAudio">0</span>
-            </div>
-            <div class="chip" data-filter="document">
-                📄 Docs <span class="chip-count" id="countDocs">0</span>
-            </div>
-        </div>
-
-        <div class="sort-wrap">
-            <div class="file-count" id="fileCount">0 files</div>
-            <select class="sort-select" id="sortSelect">
-                <option value="name">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="date">Newest first</option>
-                <option value="date-asc">Oldest first</option>
-                <option value="size">Largest first</option>
-                <option value="size-asc">Smallest first</option>
-            </select>
-        </div>
+        <button class="status-btn" id="changeFolderBtn" style="display:none;">
+            Change
+        </button>
     </div>
 
     <!-- OPEN BUTTON -->
     <div class="open-btn-wrap" id="openBtnWrap">
-        <input type="file" id="folderInput" webkitdirectory multiple hidden>
         <button class="open-btn" id="openFolderBtn">
             📂 Open Folder
         </button>
     </div>
 
-    <!-- GRID VIEW -->
-    <div class="file-grid" id="fileGrid"></div>
+    <!-- INFO BOX -->
+    <div class="info-box" id="infoBox">
+        <span>💡</span>
+        <span>
+            <strong>Tip:</strong> Jab folder select karo, Chrome "Allow" button dikhayega. 
+            Us par click karo taaki files load ho sakein.
+        </span>
+    </div>
 
-    <!-- LIST VIEW -->
-    <div class="file-list" id="fileList"></div>
-
-    <!-- BOTTOM BAR -->
-    <div class="bottom-bar" id="bottomBar">
-        <div class="selected-info">
-            <span id="selectedCount">0</span> selected
-        </div>
-        <div class="action-btns">
-            <button class="action-btn secondary" id="clearBtn">Clear</button>
-            <button class="action-btn" id="doneBtn">Done</button>
+    <!-- FILE GRID -->
+    <div class="file-grid" id="fileGrid">
+        <div class="empty">
+            <div class="empty-icon">📁</div>
+            <div class="empty-title">Folder select karo</div>
+            <div class="empty-sub">Open Folder button dabao aur apni gallery ka folder choose karo</div>
         </div>
     </div>
 
     <script>
         /* ============================================================
-           STATE
+           INDEXEDDB — dirHandle save karne ke liye
            ============================================================ */
-        let allFiles = [];        // All files from folder
-        let filteredFiles = [];   // After filter + search
-        let selectedFiles = new Set();
-        let currentView = 'grid'; // 'grid' or 'list'
-        let currentFilter = 'all';
-        let currentSort = 'name';
+        const DB_NAME = 'folder_browser_db';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'handles';
+        const HANDLE_KEY = 'saved_folder';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function saveHandle(key, handle) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(handle, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        async function getHandle(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function deleteHandle(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).delete(key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
 
         /* ============================================================
            DOM REFS
            ============================================================ */
-        const folderInput = document.getElementById('folderInput');
+        const statusBar = document.getElementById('statusBar');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const changeFolderBtn = document.getElementById('changeFolderBtn');
+        const openBtnWrap = document.getElementById('openBtnWrap');
         const openFolderBtn = document.getElementById('openFolderBtn');
         const fileGrid = document.getElementById('fileGrid');
-        const fileList = document.getElementById('fileList');
-        const folderName = document.getElementById('folderName');
-        const fileCount = document.getElementById('fileCount');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-        const gridViewBtn = document.getElementById('gridViewBtn');
-        const listViewBtn = document.getElementById('listViewBtn');
-        const bottomBar = document.getElementById('bottomBar');
-        const selectedCount = document.getElementById('selectedCount');
-        const clearBtn = document.getElementById('clearBtn');
-        const doneBtn = document.getElementById('doneBtn');
-        const filterChips = document.getElementById('filterChips');
+        const infoBox = document.getElementById('infoBox');
 
         /* ============================================================
-           FILE TYPE DETECTION
+           CHECK SUPPORT
            ============================================================ */
-        const FILE_TYPES = {
-            image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'bmp', 'svg', 'ico'],
-            video: ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'm4v'],
-            audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
-            document: ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'md']
-        };
+        const isSupported = 'showDirectoryPicker' in window;
 
-        function getFileCategory(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            for (const [category, extensions] of Object.entries(FILE_TYPES)) {
-                if (extensions.includes(ext)) return category;
-            }
-            return 'other';
+        if (!isSupported) {
+            openFolderBtn.disabled = true;
+            openFolderBtn.textContent = '❌ Not Supported';
+
+            statusBar.classList.add('error');
+            statusIcon.textContent = '⚠️';
+            statusText.textContent = 'Chrome 86+ chahiye';
+
+            infoBox.innerHTML = `
+                <span>❌</span>
+                <span>
+                    Ye browser <strong>File System Access API</strong> support nahi karta. 
+                    Chrome ya Edge use karo.
+                </span>
+            `;
         }
 
-        function getFileIcon(category, ext) {
-            const icons = {
-                video: '🎬', audio: '🎵', document: '📄',
-                other: '📎', image: '🖼️'
-            };
-            const extIcons = {
-                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
-                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
-                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
-                'apk': '📱', 'exe': '⚙️', 'html': '🌐', 'css': '🎨',
-                'js': '⚡', 'json': '📋', 'xml': '📋'
-            };
-            return extIcons[ext] || icons[category] || '📎';
-        }
-
+        /* ============================================================
+           HELPERS
+           ============================================================ */
         function formatBytes(bytes) {
             if (bytes === 0) return '0 B';
             const k = 1024;
@@ -629,329 +439,18 @@
             return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
         }
 
-        function formatDate(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            const day = 24 * 60 * 60 * 1000;
-
-            if (diff < day) return 'Today';
-            if (diff < 2 * day) return 'Yesterday';
-            if (diff < 7 * day) return Math.floor(diff / day) + 'd ago';
-
-            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        function getFileIcon(ext) {
+            const icons = {
+                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
+                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
+                'mp4': '🎬', 'mov': '🎬', 'avi': '🎬', 'mkv': '🎬',
+                'mp3': '🎵', 'wav': '🎵', 'm4a': '🎵',
+                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+                'apk': '📱', 'exe': '⚙️', 'html': '🌐'
+            };
+            return icons[ext] || '📎';
         }
 
-        /* ============================================================
-           OPEN FOLDER
-           ============================================================ */
-        openFolderBtn.addEventListener('click', () => {
-            folderInput.click();
-        });
-
-        folderInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length === 0) return;
-
-            // Get folder name from first file's path
-            const firstPath = files[0].webkitRelativePath || '';
-            const folder = firstPath.split('/')[0] || 'Selected Folder';
-            folderName.textContent = folder + ' • ' + files.length + ' items';
-
-            // Hide open button, show files
-            document.getElementById('openBtnWrap').style.display = 'none';
-
-            // Show loading
-            fileGrid.innerHTML = `
-                <div class="loading" style="grid-column: 1/-1;">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Loading files...</div>
-                </div>
-            `;
-
-            // Process files
-            await processFiles(files);
-        });
-
-        async function processFiles(files) {
-            allFiles = [];
-
-            for (const file of files) {
-                const category = getFileCategory(file.name);
-                const ext = file.name.split('.').pop().toLowerCase();
-
-                allFiles.push({
-                    file,
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    category,
-                    ext,
-                    lastModified: file.lastModified,
-                    path: file.webkitRelativePath
-                });
-            }
-
-            // Update counts
-            updateCategoryCounts();
-
-            // Apply sort + filter
-            applyFiltersAndSort();
-        }
-
-        function updateCategoryCounts() {
-            const counts = { all: allFiles.length, image: 0, video: 0, audio: 0, document: 0 };
-            allFiles.forEach(f => {
-                if (counts[f.category] !== undefined) counts[f.category]++;
-            });
-            document.getElementById('countAll').textContent = counts.all;
-            document.getElementById('countImages').textContent = counts.image;
-            document.getElementById('countVideos').textContent = counts.video;
-            document.getElementById('countAudio').textContent = counts.audio;
-            document.getElementById('countDocs').textContent = counts.document;
-        }
-
-        /* ============================================================
-           FILTER + SORT
-           ============================================================ */
-        function applyFiltersAndSort() {
-            // Filter
-            let result = allFiles;
-
-            if (currentFilter !== 'all') {
-                result = result.filter(f => f.category === currentFilter);
-            }
-
-            // Search
-            const query = searchInput.value.trim().toLowerCase();
-            if (query) {
-                result = result.filter(f => f.name.toLowerCase().includes(query));
-            }
-
-            // Sort
-            result = [...result].sort((a, b) => {
-                switch (currentSort) {
-                    case 'name': return a.name.localeCompare(b.name);
-                    case 'name-desc': return b.name.localeCompare(a.name);
-                    case 'date': return b.lastModified - a.lastModified;
-                    case 'date-asc': return a.lastModified - b.lastModified;
-                    case 'size': return b.size - a.size;
-                    case 'size-asc': return a.size - b.size;
-                    default: return 0;
-                }
-            });
-
-            filteredFiles = result;
-            fileCount.textContent = result.length + ' file' + (result.length !== 1 ? 's' : '');
-
-            renderFiles();
-        }
-
-        /* ============================================================
-           RENDER
-           ============================================================ */
-        function renderFiles() {
-            if (filteredFiles.length === 0) {
-                const emptyMsg = searchInput.value.trim()
-                    ? 'Koi file nahi mili'
-                    : 'Is category mein kuch nahi hai';
-
-                fileGrid.innerHTML = `
-                    <div class="empty" style="grid-column: 1/-1;">
-                        <div class="empty-icon">📭</div>
-                        <div class="empty-title">${emptyMsg}</div>
-                        <div class="empty-sub">Try different filter or search</div>
-                    </div>
-                `;
-                fileList.innerHTML = '';
-                return;
-            }
-
-            if (currentView === 'grid') {
-                renderGridView();
-            } else {
-                renderListView();
-            }
-        }
-
-        function renderGridView() {
-            fileGrid.innerHTML = '';
-            fileList.classList.remove('show');
-            fileGrid.classList.remove('hide');
-
-            filteredFiles.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'file-item';
-                if (selectedFiles.has(item.path)) div.classList.add('selected');
-                div.dataset.path = item.path;
-
-                // Content based on type
-                if (item.category === 'image') {
-                    // Lazy load image thumbnail
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = () => URL.revokeObjectURL(img.src);
-                    div.appendChild(img);
-                } else {
-                    const icon = document.createElement('div');
-                    icon.className = 'file-icon';
-                    icon.textContent = getFileIcon(item.category, item.ext);
-                    div.appendChild(icon);
-                }
-
-                // Extension badge
-                const extBadge = document.createElement('div');
-                extBadge.className = 'file-ext';
-                extBadge.textContent = item.ext;
-                div.appendChild(extBadge);
-
-                // Select badge
-                const selectBadge = document.createElement('div');
-                selectBadge.className = 'select-badge';
-                selectBadge.textContent = '✓';
-                div.appendChild(selectBadge);
-
-                // Click handler
-                div.addEventListener('click', () => toggleSelect(item.path));
-
-                fileGrid.appendChild(div);
-            });
-        }
-
-        function renderListView() {
-            fileList.innerHTML = '';
-            fileGrid.classList.add('hide');
-            fileList.classList.add('show');
-
-            filteredFiles.forEach((item) => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                if (selectedFiles.has(item.path)) div.classList.add('selected');
-
-                // Thumbnail
-                const thumb = document.createElement('div');
-                thumb.className = 'list-thumb';
-                if (item.category === 'image') {
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = () => URL.revokeObjectURL(img.src);
-                    thumb.appendChild(img);
-                } else {
-                    thumb.textContent = getFileIcon(item.category, item.ext);
-                }
-
-                // Info
-                const info = document.createElement('div');
-                info.className = 'list-info';
-                info.innerHTML = `
-                    <div class="list-name">${item.name}</div>
-                    <div class="list-meta">
-                        <span>${formatBytes(item.size)}</span>
-                        <span class="dot">•</span>
-                        <span>${formatDate(item.lastModified)}</span>
-                    </div>
-                `;
-
-                div.appendChild(thumb);
-                div.appendChild(info);
-
-                div.addEventListener('click', () => toggleSelect(item.path));
-                fileList.appendChild(div);
-            });
-        }
-
-        /* ============================================================
-           SELECTION
-           ============================================================ */
-        function toggleSelect(path) {
-            if (selectedFiles.has(path)) {
-                selectedFiles.delete(path);
-            } else {
-                selectedFiles.add(path);
-            }
-
-            // Update UI
-            document.querySelectorAll('.file-item, .list-item').forEach(el => {
-                const p = el.dataset.path;
-                if (p) {
-                    el.classList.toggle('selected', selectedFiles.has(p));
-                }
-            });
-
-            // Update bottom bar
-            if (selectedFiles.size > 0) {
-                bottomBar.classList.add('show');
-                selectedCount.textContent = selectedFiles.size;
-            } else {
-                bottomBar.classList.remove('show');
-            }
-        }
-
-        clearBtn.addEventListener('click', () => {
-            selectedFiles.clear();
-            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-            bottomBar.classList.remove('show');
-        });
-
-        doneBtn.addEventListener('click', () => {
-            const selected = filteredFiles.filter(f => selectedFiles.has(f.path));
-            showToast(`✅ ${selected.length} file(s) selected`);
-            console.log('Selected files:', selected.map(f => f.name));
-            // Yahan apna action — upload, process, etc.
-        });
-
-        /* ============================================================
-           VIEW TOGGLE
-           ============================================================ */
-        gridViewBtn.addEventListener('click', () => {
-            currentView = 'grid';
-            gridViewBtn.classList.add('active');
-            listViewBtn.classList.remove('active');
-            renderFiles();
-        });
-
-        listViewBtn.addEventListener('click', () => {
-            currentView = 'list';
-            listViewBtn.classList.add('active');
-            gridViewBtn.classList.remove('active');
-            renderFiles();
-        });
-
-        /* ============================================================
-           FILTER CHIPS
-           ============================================================ */
-        filterChips.addEventListener('click', (e) => {
-            const chip = e.target.closest('.chip');
-            if (!chip) return;
-
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-
-            currentFilter = chip.dataset.filter;
-            applyFiltersAndSort();
-        });
-
-        /* ============================================================
-           SEARCH + SORT
-           ============================================================ */
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                applyFiltersAndSort();
-            }, 200);
-        });
-
-        sortSelect.addEventListener('change', () => {
-            currentSort = sortSelect.value;
-            applyFiltersAndSort();
-        });
-
-        /* ============================================================
-           TOAST
-           ============================================================ */
         function showToast(msg) {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
@@ -965,8 +464,288 @@
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s';
                 setTimeout(() => toast.remove(), 300);
-            }, 2000);
+            }, 2500);
         }
+
+        function setStatus(type, icon, text) {
+            statusBar.className = 'status-bar';
+            if (type) statusBar.classList.add(type);
+            statusIcon.textContent = icon;
+            statusText.textContent = text;
+        }
+
+        /* ============================================================
+           OPEN FOLDER — MAIN LOGIC
+           ============================================================ */
+        openFolderBtn.addEventListener('click', async () => {
+            if (!isSupported) return;
+
+            try {
+                setStatus('', '⏳', 'Permission maang raha hai...');
+
+                // 🔥 YAHAN "Allow" dialog aata hai
+                const dirHandle = await window.showDirectoryPicker({
+                    mode: 'read',
+                    startIn: 'pictures'
+                });
+
+                // Save karo — next time yaad rahe
+                await saveHandle(HANDLE_KEY, dirHandle);
+
+                // Load files
+                await loadFolder(dirHandle);
+
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    setStatus('', '📂', 'Koi folder select nahi kiya');
+                    return;
+                }
+                console.error('❌ Error:', err);
+                setStatus('error', '❌', 'Error: ' + err.message);
+            }
+        });
+
+        /* ============================================================
+           LOAD FOLDER — saari files dikhao
+           ============================================================ */
+        async function loadFolder(dirHandle) {
+            setStatus('', '⏳', `Loading from: ${dirHandle.name}...`);
+            fileGrid.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Files load ho rahi hain...</div>
+                </div>
+            `;
+
+            try {
+                // Permission verify karo
+                const perm = await dirHandle.queryPermission({ mode: 'read' });
+                if (perm !== 'granted') {
+                    const req = await dirHandle.requestPermission({ mode: 'read' });
+                    if (req !== 'granted') {
+                        setStatus('error', '🔒', 'Permission denied');
+                        fileGrid.innerHTML = `
+                            <div class="empty">
+                                <div class="empty-icon">🔒</div>
+                                <div class="empty-title">Permission denied</div>
+                                <div class="empty-sub">Folder access ke liye Allow karo</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                }
+
+                // Saari entries collect karo
+                const entries = [];
+                for await (const entry of dirHandle.values()) {
+                    entries.push(entry);
+                }
+
+                // Sort — folders pehle, phir files
+                entries.sort((a, b) => {
+                    if (a.kind === 'directory' && b.kind !== 'directory') return -1;
+                    if (a.kind !== 'directory' && b.kind === 'directory') return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                fileGrid.innerHTML = '';
+
+                if (entries.length === 0) {
+                    fileGrid.innerHTML = `
+                        <div class="empty">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-title">Folder khaali hai</div>
+                            <div class="empty-sub">Is folder mein koi file nahi hai</div>
+                        </div>
+                    `;
+                    setStatus('warning', '📭', `${dirHandle.name} khaali hai`);
+                    return;
+                }
+
+                let photoCount = 0;
+                let fileCount = 0;
+                let folderCount = 0;
+
+                for (const entry of entries) {
+                    if (entry.kind === 'directory') {
+                        addFolderItem(entry);
+                        folderCount++;
+                    } else {
+                        const isImage = /\.(jpg|jpeg|png|gif|webp|heic|bmp|svg)$/i.test(entry.name);
+
+                        if (isImage) {
+                            try {
+                                const file = await entry.getFile();
+                                const url = URL.createObjectURL(file);
+                                addPhotoItem(url, entry.name, file.size);
+                                photoCount++;
+                            } catch (e) {
+                                console.warn('Skip:', entry.name, e);
+                            }
+                        } else {
+                            try {
+                                const file = await entry.getFile();
+                                addFileItem(entry.name, file.size, file.lastModified);
+                                fileCount++;
+                            } catch (e) {
+                                console.warn('Skip:', entry.name, e);
+                            }
+                        }
+                    }
+
+                    // UI yield — performance
+                    if ((photoCount + fileCount + folderCount) % 20 === 0) {
+                        await new Promise(r => setTimeout(r, 1));
+                    }
+                }
+
+                // Success
+                const summary = [];
+                if (photoCount > 0) summary.push(`${photoCount} photos`);
+                if (fileCount > 0) summary.push(`${fileCount} files`);
+                if (folderCount > 0) summary.push(`${folderCount} folders`);
+
+                setStatus('success', '✅', `${dirHandle.name} • ${summary.join(' • ')}`);
+
+                // UI updates
+                openBtnWrap.style.display = 'none';
+                changeFolderBtn.style.display = 'block';
+                infoBox.style.display = 'none';
+
+            } catch (err) {
+                console.error('Load error:', err);
+                setStatus('error', '❌', 'Error: ' + err.message);
+            }
+        }
+
+        /* ============================================================
+           RENDER ITEMS
+           ============================================================ */
+        function addPhotoItem(url, name, size) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            
+            const img = document.createElement('img');
+            img.loading = 'lazy';
+            img.src = url;
+            img.onload = () => URL.revokeObjectURL(url);
+            div.appendChild(img);
+
+            const ext = name.split('.').pop().toUpperCase();
+            const extBadge = document.createElement('div');
+            extBadge.className = 'file-ext';
+            extBadge.textContent = ext;
+            div.appendChild(extBadge);
+
+            div.addEventListener('click', () => {
+                showToast(`${name} • ${formatBytes(size)}`);
+            });
+
+            fileGrid.appendChild(div);
+        }
+
+        function addFileItem(name, size, mtime) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+
+            const ext = name.split('.').pop().toLowerCase();
+            const icon = document.createElement('div');
+            icon.className = 'file-icon';
+            icon.textContent = getFileIcon(ext);
+            div.appendChild(icon);
+
+            const extBadge = document.createElement('div');
+            extBadge.className = 'file-ext';
+            extBadge.textContent = ext.toUpperCase();
+            div.appendChild(extBadge);
+
+            div.addEventListener('click', () => {
+                showToast(`${name} • ${formatBytes(size)}`);
+            });
+
+            fileGrid.appendChild(div);
+        }
+
+        function addFolderItem(entry) {
+            const div = document.createElement('div');
+            div.className = 'file-item folder';
+
+            const icon = document.createElement('div');
+            icon.className = 'file-icon';
+            icon.textContent = '📁';
+            div.appendChild(icon);
+
+            const extBadge = document.createElement('div');
+            extBadge.className = 'file-ext';
+            extBadge.textContent = 'DIR';
+            div.appendChild(extBadge);
+
+            div.addEventListener('click', async () => {
+                // Sub-folder mein jao
+                await loadFolder(entry);
+            });
+
+            fileGrid.appendChild(div);
+        }
+
+        /* ============================================================
+           CHANGE FOLDER
+           ============================================================ */
+        changeFolderBtn.addEventListener('click', async () => {
+            await deleteHandle(HANDLE_KEY);
+            openBtnWrap.style.display = 'block';
+            changeFolderBtn.style.display = 'none';
+            infoBox.style.display = 'flex';
+            fileGrid.innerHTML = `
+                <div class="empty">
+                    <div class="empty-icon">📁</div>
+                    <div class="empty-title">Folder select karo</div>
+                    <div class="empty-sub">Open Folder button dabao</div>
+                </div>
+            `;
+            setStatus('', '📂', 'Koi folder select nahi kiya');
+        });
+
+        /* ============================================================
+           INIT — Saved folder check karo
+           ============================================================ */
+        async function init() {
+            if (!isSupported) return;
+
+            try {
+                const savedHandle = await getHandle(HANDLE_KEY);
+                if (!savedHandle) return;
+
+                const perm = await savedHandle.queryPermission({ mode: 'read' });
+
+                if (perm === 'granted') {
+                    // ✅ Silent load
+                    console.log('✅ Auto-loading saved folder');
+                    await loadFolder(savedHandle);
+                } else if (perm === 'prompt') {
+                    // ⚠️ Reconnect banner
+                    setStatus('warning', '⚠️', `${savedHandle.name} • Reconnect karo`);
+                    changeFolderBtn.textContent = 'Reconnect';
+                    changeFolderBtn.style.display = 'block';
+                    openBtnWrap.style.display = 'none';
+
+                    changeFolderBtn.onclick = async () => {
+                        try {
+                            const req = await savedHandle.requestPermission({ mode: 'read' });
+                            if (req === 'granted') {
+                                await loadFolder(savedHandle);
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    };
+                }
+            } catch (err) {
+                console.warn('Init error:', err);
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
