@@ -2,161 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Folder Browser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Folder Viewer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background: #0a0a0a; color: #fff; padding: 20px; min-height: 100vh; }
 
-        body {
-            background: #0a0a0a;
-            color: #fff;
-            min-height: 100vh;
-            padding: 0 0 40px;
-        }
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 22px; margin-bottom: 8px; }
+        .header p { font-size: 13px; color: #8e8e93; }
 
-        /* ===== HEADER ===== */
-        .header {
-            padding: 20px 16px 16px;
-            text-align: center;
-        }
+        .btn-row { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
 
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .header p {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-
-        /* ===== STATUS BAR ===== */
-        .status-bar {
-            max-width: 500px;
-            margin: 0 auto 16px;
-            padding: 12px 16px;
-            background: #1c1c1e;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #8e8e93;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .status-bar.success {
-            background: rgba(52, 168, 83, 0.12);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            color: #34A853;
-        }
-
-        .status-bar.error {
-            background: rgba(255, 59, 48, 0.12);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            color: #FF3B30;
-        }
-
-        .status-bar.warning {
-            background: rgba(255, 193, 7, 0.12);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            color: #FFC107;
-        }
-
-        .status-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .gallery-btn {
             flex: 1;
-            min-width: 0;
-        }
-
-        .status-folder {
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .status-btn {
-            padding: 6px 12px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
-            background: #2c2c2e;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-
-        .status-btn.primary {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-        }
-
-        /* ===== MAIN BUTTON ===== */
-        .open-btn-wrap {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            padding: 0 16px;
-        }
-
-        .open-btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
-            transition: transform 0.15s;
+            gap: 8px;
+        }
+        .gallery-btn:active { transform: scale(0.97); }
+        .gallery-btn:disabled { opacity: 0.5; }
+
+        .gallery-btn.secondary {
+            background: #2c2c2e;
+            box-shadow: none;
+            font-size: 14px;
+            flex: 0 0 auto;
+            padding: 16px 20px;
         }
 
-        .open-btn:active {
-            transform: scale(0.97);
+        .status {
+            text-align: center;
+            font-size: 13px;
+            color: #8e8e93;
+            margin-bottom: 20px;
+            min-height: 20px;
         }
 
-        .open-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* ===== FILE GRID ===== */
         .file-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-            padding: 0 16px;
-            max-width: 600px;
+            gap: 4px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
         .file-item {
             aspect-ratio: 1;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             position: relative;
@@ -164,180 +67,102 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.15s;
         }
-
-        .file-item:active {
-            transform: scale(0.95);
-        }
-
-        .file-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .file-item .file-icon {
-            font-size: 32px;
-            opacity: 0.7;
-        }
-
-        .file-item .file-ext {
+        .file-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .file-item .file-icon { font-size: 32px; opacity: 0.6; }
+        .file-item .file-name {
             position: absolute;
-            bottom: 6px;
-            left: 6px;
-            padding: 2px 6px;
-            background: rgba(0, 0, 0, 0.7);
+            bottom: 0; left: 0; right: 0;
+            padding: 6px 8px;
+            font-size: 10px;
             color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        .file-item.selected { outline: 3px solid #dc2743; outline-offset: -3px; }
 
-        .file-item.folder .file-icon {
-            font-size: 40px;
-            opacity: 1;
-        }
-
-        /* ===== LOADING ===== */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
+        .empty {
             grid-column: 1 / -1;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(220, 39, 67, 0.15);
-            border-top-color: #dc2743;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
+            text-align: center;
+            padding: 40px 20px;
             color: #8e8e93;
             font-size: 14px;
         }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
 
-        /* ===== EMPTY ===== */
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
+        .loading {
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
         }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.4;
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(220, 39, 67, 0.2);
+            border-top-color: #dc2743;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .empty-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .empty-sub {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.5;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c2c2e;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 9999;
-            animation: toastIn 0.3s;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            white-space: nowrap;
-        }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* Info box */
-        .info-box {
+        .reconnect-banner {
             max-width: 500px;
-            margin: 16px auto;
+            margin: 0 auto 20px;
             padding: 14px 16px;
-            background: rgba(26, 115, 232, 0.08);
-            border: 1px solid rgba(26, 115, 232, 0.25);
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.4);
             border-radius: 12px;
-            font-size: 12px;
-            color: #6BA3E8;
-            line-height: 1.6;
-            display: flex;
-            gap: 10px;
+            font-size: 13px;
+            color: #FFC107;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
+        .reconnect-banner.show { display: flex; }
 
-        .info-box strong {
-            color: #1a73e8;
+        .reconnect-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #FFC107;
+            color: #1a1a1a;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
     <div class="header">
         <h1>📁 Folder Browser</h1>
-        <p>Ek baar folder select karo — saari files dikhengi</p>
+        <p>Ek baar select karo — baar baar nahi poochega</p>
     </div>
 
-    <!-- STATUS BAR -->
-    <div class="status-bar" id="statusBar">
-        <div class="status-info">
-            <span id="statusIcon">📂</span>
-            <span id="statusText">Koi folder select nahi kiya</span>
-        </div>
-        <button class="status-btn" id="changeFolderBtn" style="display:none;">
-            Change
-        </button>
-    </div>
-
-    <!-- OPEN BUTTON -->
-    <div class="open-btn-wrap" id="openBtnWrap">
-        <button class="open-btn" id="openFolderBtn">
+    <div class="btn-row">
+        <button class="gallery-btn" id="openFolderBtn">
             📂 Open Folder
         </button>
+        <button class="gallery-btn secondary" id="resetBtn" title="Saved folder hatao">
+            🔄
+        </button>
     </div>
 
-    <!-- INFO BOX -->
-    <div class="info-box" id="infoBox">
-        <span>💡</span>
-        <span>
-            <strong>Tip:</strong> Jab folder select karo, Chrome "Allow" button dikhayega. 
-            Us par click karo taaki files load ho sakein.
-        </span>
+    <!-- Reconnect banner (agar permission expire ho gayi) -->
+    <div class="reconnect-banner" id="reconnectBanner">
+        <span>⚠️ Folder permission expire ho gayi</span>
+        <button class="reconnect-btn" id="reconnectBtn">Reconnect</button>
     </div>
 
-    <!-- FILE GRID -->
+    <div class="status" id="status"></div>
+
     <div class="file-grid" id="fileGrid">
         <div class="empty">
             <div class="empty-icon">📁</div>
-            <div class="empty-title">Folder select karo</div>
-            <div class="empty-sub">Open Folder button dabao aur apni gallery ka folder choose karo</div>
+            <div>Folder select karne ke liye button dabao</div>
         </div>
     </div>
 
@@ -345,10 +170,9 @@
         /* ============================================================
            INDEXEDDB — dirHandle save karne ke liye
            ============================================================ */
-        const DB_NAME = 'folder_browser_db';
+        const DB_NAME = 'gallery_db';
         const DB_VERSION = 1;
         const STORE_NAME = 'handles';
-        const HANDLE_KEY = 'saved_folder';
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -395,154 +219,165 @@
         }
 
         /* ============================================================
-           DOM REFS
+           MAIN LOGIC
            ============================================================ */
-        const statusBar = document.getElementById('statusBar');
-        const statusIcon = document.getElementById('statusIcon');
-        const statusText = document.getElementById('statusText');
-        const changeFolderBtn = document.getElementById('changeFolderBtn');
-        const openBtnWrap = document.getElementById('openBtnWrap');
         const openFolderBtn = document.getElementById('openFolderBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const fileGrid = document.getElementById('fileGrid');
-        const infoBox = document.getElementById('infoBox');
+        const status = document.getElementById('status');
+        const reconnectBanner = document.getElementById('reconnectBanner');
+        const reconnectBtn = document.getElementById('reconnectBtn');
 
-        /* ============================================================
-           CHECK SUPPORT
-           ============================================================ */
+        const HANDLE_KEY = 'saved_gallery_folder';
+        let currentDirHandle = null;
+
         const isSupported = 'showDirectoryPicker' in window;
 
         if (!isSupported) {
             openFolderBtn.disabled = true;
+            openFolderBtn.style.opacity = '0.5';
             openFolderBtn.textContent = '❌ Not Supported';
-
-            statusBar.classList.add('error');
-            statusIcon.textContent = '⚠️';
-            statusText.textContent = 'Chrome 86+ chahiye';
-
-            infoBox.innerHTML = `
-                <span>❌</span>
-                <span>
-                    Ye browser <strong>File System Access API</strong> support nahi karta. 
-                    Chrome ya Edge use karo.
-                </span>
-            `;
+            status.textContent = 'Chrome (Android/Desktop) 132+ chahiye';
         }
 
         /* ============================================================
-           HELPERS
+           PAGE LOAD — saved handle check karo
            ============================================================ */
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
-        }
+        async function init() {
+            if (!isSupported) return;
 
-        function getFileIcon(ext) {
-            const icons = {
-                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
-                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
-                'mp4': '🎬', 'mov': '🎬', 'avi': '🎬', 'mkv': '🎬',
-                'mp3': '🎵', 'wav': '🎵', 'm4a': '🎵',
-                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
-                'apk': '📱', 'exe': '⚙️', 'html': '🌐'
-            };
-            return icons[ext] || '📎';
-        }
+            try {
+                const savedHandle = await getHandle(HANDLE_KEY);
+                if (!savedHandle) {
+                    status.textContent = 'Koi folder saved nahi hai';
+                    return;
+                }
 
-        function showToast(msg) {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
+                // Permission status check karo (bina prompt ke)
+                const perm = await savedHandle.queryPermission({ mode: 'read' });
 
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
-
-        function setStatus(type, icon, text) {
-            statusBar.className = 'status-bar';
-            if (type) statusBar.classList.add(type);
-            statusIcon.textContent = icon;
-            statusText.textContent = text;
+                if (perm === 'granted') {
+                    // ✅ Permission already granted — silently load karo
+                    console.log('✅ Auto-loading saved folder');
+                    status.textContent = '📂 Loading saved folder...';
+                    currentDirHandle = savedHandle;
+                    await loadAllFiles(savedHandle);
+                } else if (perm === 'prompt') {
+                    // ⚠️ Ek baar prompt dikhao reconnect banner ke through
+                    console.log('⚠️ Permission prompt needed');
+                    reconnectBanner.classList.add('show');
+                    status.textContent = 'Reconnect karo apna folder';
+                } else {
+                    // ❌ Denied
+                    console.log('❌ Permission denied');
+                    await deleteHandle(HANDLE_KEY);
+                }
+            } catch (err) {
+                console.warn('Init error:', err);
+            }
         }
 
         /* ============================================================
-           OPEN FOLDER — MAIN LOGIC
+           OPEN FOLDER — pehli baar ya naya folder
            ============================================================ */
         openFolderBtn.addEventListener('click', async () => {
             if (!isSupported) return;
 
             try {
-                setStatus('', '⏳', 'Permission maang raha hai...');
+                status.textContent = '📂 Permission maang raha hai...';
 
-                // 🔥 YAHAN "Allow" dialog aata hai
                 const dirHandle = await window.showDirectoryPicker({
                     mode: 'read',
                     startIn: 'pictures'
                 });
 
-                // Save karo — next time yaad rahe
+                // Save karo — next time yaad rahega
                 await saveHandle(HANDLE_KEY, dirHandle);
+                currentDirHandle = dirHandle;
 
-                // Load files
-                await loadFolder(dirHandle);
+                console.log('📁 Folder saved:', dirHandle.name);
+                status.textContent = `📂 Loading from: ${dirHandle.name}`;
+                reconnectBanner.classList.remove('show');
+
+                await loadAllFiles(dirHandle);
 
             } catch (err) {
                 if (err.name === 'AbortError') {
-                    setStatus('', '📂', 'Koi folder select nahi kiya');
+                    status.textContent = 'Cancelled';
                     return;
                 }
                 console.error('❌ Error:', err);
-                setStatus('error', '❌', 'Error: ' + err.message);
+                status.textContent = '❌ Error: ' + err.message;
             }
         });
 
         /* ============================================================
-           LOAD FOLDER — saari files dikhao
+           RECONNECT — sirf permission maango, folder dobara nahi
            ============================================================ */
-        async function loadFolder(dirHandle) {
-            setStatus('', '⏳', `Loading from: ${dirHandle.name}...`);
-            fileGrid.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Files load ho rahi hain...</div>
-                </div>
-            `;
+        reconnectBtn.addEventListener('click', async () => {
+            try {
+                const savedHandle = await getHandle(HANDLE_KEY);
+                if (!savedHandle) {
+                    reconnectBanner.classList.remove('show');
+                    return;
+                }
+
+                // Sirf permission maango — folder picker nahi khulega
+                const perm = await savedHandle.requestPermission({ mode: 'read' });
+
+                if (perm === 'granted') {
+                    console.log('✅ Reconnected');
+                    reconnectBanner.classList.remove('show');
+                    status.textContent = '📂 Loading...';
+                    currentDirHandle = savedHandle;
+                    await loadAllFiles(savedHandle);
+                } else {
+                    status.textContent = '❌ Permission denied';
+                    await deleteHandle(HANDLE_KEY);
+                    reconnectBanner.classList.remove('show');
+                }
+            } catch (err) {
+                console.error('Reconnect error:', err);
+                status.textContent = '❌ Error: ' + err.message;
+            }
+        });
+
+        /* ============================================================
+           RESET — saved folder bhool jao
+           ============================================================ */
+        resetBtn.addEventListener('click', async () => {
+            if (!confirm('Saved folder bhool jayein? Next time phir se select karna padega.')) return;
+            await deleteHandle(HANDLE_KEY);
+            currentDirHandle = null;
+            reconnectBanner.classList.remove('show');
+            fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div>Folder select karne ke liye button dabao</div></div>';
+            status.textContent = '✅ Reset ho gaya';
+        });
+
+        /* ============================================================
+           LOAD FILES
+           ============================================================ */
+        async function loadAllFiles(dirHandle) {
+            fileGrid.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading files...</div></div>';
 
             try {
-                // Permission verify karo
+                // Verify permission before reading
                 const perm = await dirHandle.queryPermission({ mode: 'read' });
                 if (perm !== 'granted') {
                     const req = await dirHandle.requestPermission({ mode: 'read' });
                     if (req !== 'granted') {
-                        setStatus('error', '🔒', 'Permission denied');
-                        fileGrid.innerHTML = `
-                            <div class="empty">
-                                <div class="empty-icon">🔒</div>
-                                <div class="empty-title">Permission denied</div>
-                                <div class="empty-sub">Folder access ke liye Allow karo</div>
-                            </div>
-                        `;
+                        fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>Permission denied</div></div>';
                         return;
                     }
                 }
 
-                // Saari entries collect karo
-                const entries = [];
+                const files = [];
                 for await (const entry of dirHandle.values()) {
-                    entries.push(entry);
+                    files.push(entry);
                 }
 
-                // Sort — folders pehle, phir files
-                entries.sort((a, b) => {
+                // Sort: folders first, then alphabetically
+                files.sort((a, b) => {
                     if (a.kind === 'directory' && b.kind !== 'directory') return -1;
                     if (a.kind !== 'directory' && b.kind === 'directory') return 1;
                     return a.name.localeCompare(b.name);
@@ -550,15 +385,8 @@
 
                 fileGrid.innerHTML = '';
 
-                if (entries.length === 0) {
-                    fileGrid.innerHTML = `
-                        <div class="empty">
-                            <div class="empty-icon">📭</div>
-                            <div class="empty-title">Folder khaali hai</div>
-                            <div class="empty-sub">Is folder mein koi file nahi hai</div>
-                        </div>
-                    `;
-                    setStatus('warning', '📭', `${dirHandle.name} khaali hai`);
+                if (files.length === 0) {
+                    fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>Folder khaali hai</div></div>';
                     return;
                 }
 
@@ -566,185 +394,97 @@
                 let fileCount = 0;
                 let folderCount = 0;
 
-                for (const entry of entries) {
+                for (const entry of files) {
                     if (entry.kind === 'directory') {
-                        addFolderItem(entry);
+                        addFolderToGrid(entry);
                         folderCount++;
                     } else {
-                        const isImage = /\.(jpg|jpeg|png|gif|webp|heic|bmp|svg)$/i.test(entry.name);
-
+                        const isImage = /\.(jpg|jpeg|png|gif|webp|heic|bmp)$/i.test(entry.name);
                         if (isImage) {
                             try {
                                 const file = await entry.getFile();
                                 const url = URL.createObjectURL(file);
-                                addPhotoItem(url, entry.name, file.size);
+                                addPhotoToGrid(url, entry.name);
                                 photoCount++;
                             } catch (e) {
                                 console.warn('Skip:', entry.name, e);
                             }
                         } else {
-                            try {
-                                const file = await entry.getFile();
-                                addFileItem(entry.name, file.size, file.lastModified);
-                                fileCount++;
-                            } catch (e) {
-                                console.warn('Skip:', entry.name, e);
-                            }
+                            addFileToGrid(entry.name);
+                            fileCount++;
                         }
                     }
 
-                    // UI yield — performance
+                    // Yield to UI every 20 items
                     if ((photoCount + fileCount + folderCount) % 20 === 0) {
                         await new Promise(r => setTimeout(r, 1));
                     }
                 }
 
-                // Success
-                const summary = [];
-                if (photoCount > 0) summary.push(`${photoCount} photos`);
-                if (fileCount > 0) summary.push(`${fileCount} files`);
-                if (folderCount > 0) summary.push(`${folderCount} folders`);
-
-                setStatus('success', '✅', `${dirHandle.name} • ${summary.join(' • ')}`);
-
-                // UI updates
-                openBtnWrap.style.display = 'none';
-                changeFolderBtn.style.display = 'block';
-                infoBox.style.display = 'none';
+                status.textContent = `✅ ${photoCount} photos • ${fileCount} files • ${folderCount} folders`;
 
             } catch (err) {
                 console.error('Load error:', err);
-                setStatus('error', '❌', 'Error: ' + err.message);
-            }
-        }
-
-        /* ============================================================
-           RENDER ITEMS
-           ============================================================ */
-        function addPhotoItem(url, name, size) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            
-            const img = document.createElement('img');
-            img.loading = 'lazy';
-            img.src = url;
-            img.onload = () => URL.revokeObjectURL(url);
-            div.appendChild(img);
-
-            const ext = name.split('.').pop().toUpperCase();
-            const extBadge = document.createElement('div');
-            extBadge.className = 'file-ext';
-            extBadge.textContent = ext;
-            div.appendChild(extBadge);
-
-            div.addEventListener('click', () => {
-                showToast(`${name} • ${formatBytes(size)}`);
-            });
-
-            fileGrid.appendChild(div);
-        }
-
-        function addFileItem(name, size, mtime) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-
-            const ext = name.split('.').pop().toLowerCase();
-            const icon = document.createElement('div');
-            icon.className = 'file-icon';
-            icon.textContent = getFileIcon(ext);
-            div.appendChild(icon);
-
-            const extBadge = document.createElement('div');
-            extBadge.className = 'file-ext';
-            extBadge.textContent = ext.toUpperCase();
-            div.appendChild(extBadge);
-
-            div.addEventListener('click', () => {
-                showToast(`${name} • ${formatBytes(size)}`);
-            });
-
-            fileGrid.appendChild(div);
-        }
-
-        function addFolderItem(entry) {
-            const div = document.createElement('div');
-            div.className = 'file-item folder';
-
-            const icon = document.createElement('div');
-            icon.className = 'file-icon';
-            icon.textContent = '📁';
-            div.appendChild(icon);
-
-            const extBadge = document.createElement('div');
-            extBadge.className = 'file-ext';
-            extBadge.textContent = 'DIR';
-            div.appendChild(extBadge);
-
-            div.addEventListener('click', async () => {
-                // Sub-folder mein jao
-                await loadFolder(entry);
-            });
-
-            fileGrid.appendChild(div);
-        }
-
-        /* ============================================================
-           CHANGE FOLDER
-           ============================================================ */
-        changeFolderBtn.addEventListener('click', async () => {
-            await deleteHandle(HANDLE_KEY);
-            openBtnWrap.style.display = 'block';
-            changeFolderBtn.style.display = 'none';
-            infoBox.style.display = 'flex';
-            fileGrid.innerHTML = `
-                <div class="empty">
-                    <div class="empty-icon">📁</div>
-                    <div class="empty-title">Folder select karo</div>
-                    <div class="empty-sub">Open Folder button dabao</div>
-                </div>
-            `;
-            setStatus('', '📂', 'Koi folder select nahi kiya');
-        });
-
-        /* ============================================================
-           INIT — Saved folder check karo
-           ============================================================ */
-        async function init() {
-            if (!isSupported) return;
-
-            try {
-                const savedHandle = await getHandle(HANDLE_KEY);
-                if (!savedHandle) return;
-
-                const perm = await savedHandle.queryPermission({ mode: 'read' });
-
-                if (perm === 'granted') {
-                    // ✅ Silent load
-                    console.log('✅ Auto-loading saved folder');
-                    await loadFolder(savedHandle);
-                } else if (perm === 'prompt') {
-                    // ⚠️ Reconnect banner
-                    setStatus('warning', '⚠️', `${savedHandle.name} • Reconnect karo`);
-                    changeFolderBtn.textContent = 'Reconnect';
-                    changeFolderBtn.style.display = 'block';
-                    openBtnWrap.style.display = 'none';
-
-                    changeFolderBtn.onclick = async () => {
-                        try {
-                            const req = await savedHandle.requestPermission({ mode: 'read' });
-                            if (req === 'granted') {
-                                await loadFolder(savedHandle);
-                            }
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    };
+                if (err.name === 'NotAllowedError') {
+                    reconnectBanner.classList.add('show');
+                    status.textContent = '⚠️ Permission expire ho gayi';
+                } else {
+                    status.textContent = '❌ Error: ' + err.message;
                 }
-            } catch (err) {
-                console.warn('Init error:', err);
             }
         }
 
+        function addPhotoToGrid(url, name) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.innerHTML = `<img src="${url}" alt="${name}" loading="lazy">`;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                console.log('✅ Selected:', name);
+            });
+            fileGrid.appendChild(div);
+        }
+
+        function addFileToGrid(name) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            const ext = name.split('.').pop().toLowerCase();
+            const icon = getFileIcon(ext);
+            div.innerHTML = `<div class="file-icon">${icon}</div><div class="file-name">${name}</div>`;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+            });
+            fileGrid.appendChild(div);
+        }
+
+        function addFolderToGrid(entry) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.innerHTML = `<div class="file-icon">📁</div><div class="file-name">${entry.name}</div>`;
+            div.addEventListener('click', async () => {
+                status.textContent = `📂 Entering: ${entry.name}`;
+                // Sub-folder mein permission same handle se hai
+                await loadAllFiles(entry);
+            });
+            fileGrid.appendChild(div);
+        }
+
+        function getFileIcon(ext) {
+            const icons = {
+                'pdf': '📄', 'doc': '📝', 'docx': '📝', 'txt': '📃',
+                'mp4': '🎬', 'mov': '🎬', 'avi': '🎬', 'mkv': '🎬',
+                'mp3': '🎵', 'wav': '🎵', 'm4a': '🎵',
+                'zip': '📦', 'rar': '📦', '7z': '📦',
+                'apk': '📱', 'exe': '⚙️'
+            };
+            return icons[ext] || '📎';
+        }
+
+        /* ============================================================
+           INIT
+           ============================================================ */
         init();
     </script>
 </body>
