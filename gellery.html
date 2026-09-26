@@ -3,367 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>File Browser</title>
+    <title>Add Photos</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding: 20px 16px 40px;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ===== HEADER ===== */
         .header {
-            position: sticky;
-            top: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 16px;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
+            text-align: center;
+            margin-bottom: 28px;
+            padding-top: 20px;
         }
 
         .header h1 {
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #fff, #8e8e93);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .folder-name {
-            font-size: 12px;
-            color: #8e8e93;
-            font-weight: 400;
-            max-width: 180px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 4px;
-            background: #1c1c1e;
-            border-radius: 10px;
-            padding: 3px;
-        }
-
-        .view-btn {
-            padding: 6px 12px;
-            border: none;
-            background: transparent;
-            color: #8e8e93;
+        .header p {
             font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+            color: #8e8e93;
+            line-height: 1.5;
         }
 
-        .view-btn.active {
-            background: #2c2c2e;
-            color: #fff;
-        }
-
-        /* Search bar */
-        .search-wrap {
+        /* ===== DROP ZONE ===== */
+        .dropzone {
             position: relative;
-            margin-bottom: 12px;
-        }
-
-        .search-input {
+            max-width: 500px;
             width: 100%;
-            padding: 12px 16px 12px 40px;
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
+            margin: 0 auto 24px;
+            padding: 48px 24px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
-        .search-input:focus {
-            border-color: #1a73e8;
-        }
-
-        .search-icon {
+        .dropzone::before {
+            content: '';
             position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8e8e93;
-            font-size: 16px;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(220, 39, 67, 0.15), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
             pointer-events: none;
         }
 
-        /* Filter chips */
-        .filter-chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
+        .dropzone:hover::before,
+        .dropzone.dragover::before {
+            opacity: 1;
         }
 
-        .filter-chips::-webkit-scrollbar { display: none; }
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: #dc2743;
+            transform: translateY(-2px);
+            box-shadow: 0 20px 50px rgba(220, 39, 67, 0.2);
+        }
 
-        .chip {
-            flex-shrink: 0;
-            padding: 8px 14px;
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
+        .dropzone.dragover {
+            transform: scale(1.02);
+            border-style: solid;
+        }
+
+        .dropzone-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .dropzone-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .dropzone-sub {
+            font-size: 13px;
             color: #8e8e93;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
+        }
+
+        .dropzone-badge {
+            display: inline-flex;
             align-items: center;
             gap: 6px;
+            margin-top: 16px;
+            padding: 6px 14px;
+            background: rgba(52, 168, 83, 0.12);
+            border: 1px solid rgba(52, 168, 83, 0.3);
+            color: #34A853;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .chip.active {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            border-color: transparent;
+        /* ===== DIVIDER ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto 24px;
+            color: #5f6368;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        }
+
+        /* ===== OPTIONS ===== */
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(44,44,46,0.6), rgba(28,28,30,0.6));
             color: #fff;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
         }
 
-        .chip .chip-count {
-            background: rgba(0,0,0,0.3);
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(240, 148, 51, 0.1), rgba(220, 39, 67, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* Sort dropdown */
-        .sort-wrap {
+        .option-btn:hover {
+            border-color: rgba(220, 39, 67, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.15);
+        }
+
+        .option-btn:hover::before {
+            opacity: 1;
+        }
+
+        .option-btn:active {
+            transform: scale(0.97);
+        }
+
+        .option-icon {
+            font-size: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .option-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* ===== PREVIEW GRID ===== */
+        .preview-section {
+            max-width: 600px;
+            width: 100%;
+            margin: 32px auto 0;
+            display: none;
+        }
+
+        .preview-section.show {
+            display: block;
+            animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 12px;
+            margin-bottom: 16px;
+            padding: 0 4px;
         }
 
-        .file-count {
-            font-size: 12px;
+        .preview-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .preview-count {
+            font-size: 13px;
             color: #8e8e93;
         }
 
-        .sort-select {
-            background: #1c1c1e;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            color: #fff;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-family: inherit;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* ===== MAIN BUTTON ===== */
-        .open-btn-wrap {
-            padding: 20px 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .open-btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
-            transition: transform 0.15s;
-        }
-
-        .open-btn:active { transform: scale(0.97); }
-
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50%      { background-position: 100% 50%; }
-        }
-
-        /* ===== GRID VIEW ===== */
-        .file-grid {
+        .preview-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-            padding: 0 12px;
-            max-width: 600px;
-            margin: 0 auto;
+            gap: 4px;
         }
 
-        .file-item {
+        .preview-item {
             aspect-ratio: 1;
             border-radius: 10px;
             overflow: hidden;
-            cursor: pointer;
             position: relative;
             background: #1c1c1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.15s;
+            animation: itemIn 0.3s backwards;
+            cursor: pointer;
         }
 
-        .file-item:active { transform: scale(0.95); }
+        @keyframes itemIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
-        .file-item img {
+        .preview-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
 
-        .file-item .file-icon {
-            font-size: 32px;
-            opacity: 0.7;
-        }
-
-        .file-item .file-ext {
-            position: absolute;
-            bottom: 6px;
-            left: 6px;
-            padding: 2px 6px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .file-item .file-duration {
-            position: absolute;
-            bottom: 6px;
-            right: 6px;
-            padding: 2px 6px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-            border-radius: 4px;
-        }
-
-        .file-item .select-badge {
+        .preview-item .item-remove {
             position: absolute;
             top: 6px;
             right: 6px;
-            width: 22px;
-            height: 22px;
-            background: #dc2743;
-            color: #fff;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
             font-size: 12px;
-            font-weight: 700;
-            border: 2px solid #fff;
-        }
-
-        .file-item.selected {
-            outline: 3px solid #dc2743;
-            outline-offset: -3px;
-        }
-
-        .file-item.selected .select-badge { display: flex; }
-
-        /* ===== LIST VIEW ===== */
-        .file-list {
-            padding: 0 12px;
-            max-width: 600px;
-            margin: 0 auto;
-            display: none;
-        }
-
-        .file-list.show { display: block; }
-        .file-grid.hide { display: none; }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .list-item:active { background: #1c1c1e; }
-
-        .list-item.selected {
-            background: rgba(220, 39, 67, 0.15);
-            border: 1px solid rgba(220, 39, 67, 0.4);
-        }
-
-        .list-thumb {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #1c1c1e;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            font-size: 24px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        .list-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .preview-item:hover .item-remove,
+        .preview-item:active .item-remove {
+            opacity: 1;
         }
 
-        .list-info {
-            flex: 1;
-            min-width: 0;
+        /* ===== ACTION BAR ===== */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(180deg, transparent, #0a0a0a 30%);
+            display: none;
+            gap: 10px;
+            z-index: 100;
         }
 
-        .list-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .list-meta {
-            font-size: 12px;
-            color: #8e8e93;
+        .action-bar.show {
             display: flex;
-            gap: 8px;
-            align-items: center;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .list-meta .dot { opacity: 0.5; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2e;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            animation: toastIn 0.3s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
 
         /* ===== LOADING ===== */
         .loading {
@@ -381,104 +401,21 @@
             margin: 0 auto 16px;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         .loading-text {
             color: #8e8e93;
             font-size: 14px;
         }
 
-        /* ===== EMPTY ===== */
-        .empty {
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.4;
-        }
-
-        .empty-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .empty-sub {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-
-        /* ===== BOTTOM BAR ===== */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
-        }
-
-        .bottom-bar.show { display: flex; }
-
-        .selected-info {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .selected-info span {
-            color: #dc2743;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .action-btn.secondary {
-            background: #2c2c2e;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c2c2e;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 9999;
-            animation: toastIn 0.3s;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            white-space: nowrap;
-        }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* Hide inputs */
+        .hidden-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -486,467 +423,246 @@
 
     <!-- HEADER -->
     <div class="header">
-        <div class="header-top">
-            <div>
-                <h1>📁 Files</h1>
-                <div class="folder-name" id="folderName">Koi folder select nahi kiya</div>
-            </div>
-            <div class="view-toggle">
-                <button class="view-btn active" id="gridViewBtn" title="Grid">▦</button>
-                <button class="view-btn" id="listViewBtn" title="List">☰</button>
-            </div>
-        </div>
+        <h1>Add Photos</h1>
+        <p>Apni photos select karo — friends ke saath share karo</p>
+    </div>
 
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
-        </div>
-
-        <div class="filter-chips" id="filterChips">
-            <div class="chip active" data-filter="all">
-                All <span class="chip-count" id="countAll">0</span>
-            </div>
-            <div class="chip" data-filter="image">
-                🖼️ Images <span class="chip-count" id="countImages">0</span>
-            </div>
-            <div class="chip" data-filter="video">
-                🎬 Videos <span class="chip-count" id="countVideos">0</span>
-            </div>
-            <div class="chip" data-filter="audio">
-                🎵 Audio <span class="chip-count" id="countAudio">0</span>
-            </div>
-            <div class="chip" data-filter="document">
-                📄 Docs <span class="chip-count" id="countDocs">0</span>
-            </div>
-        </div>
-
-        <div class="sort-wrap">
-            <div class="file-count" id="fileCount">0 files</div>
-            <select class="sort-select" id="sortSelect">
-                <option value="name">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="date">Newest first</option>
-                <option value="date-asc">Oldest first</option>
-                <option value="size">Largest first</option>
-                <option value="size-asc">Smallest first</option>
-            </select>
+    <!-- DROP ZONE -->
+    <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">📸</div>
+        <div class="dropzone-title">Drop photos here</div>
+        <div class="dropzone-sub">ya tap karke browse karo</div>
+        <div class="dropzone-badge">
+            <span>🔒</span>
+            <span>100% private</span>
         </div>
     </div>
 
-    <!-- OPEN BUTTON -->
-    <div class="open-btn-wrap" id="openBtnWrap">
-        <input type="file" id="folderInput" webkitdirectory multiple hidden>
-        <button class="open-btn" id="openFolderBtn">
-            📂 Open Folder
+    <!-- DIVIDER -->
+    <div class="divider">ya chuno</div>
+
+    <!-- OPTIONS -->
+    <div class="options">
+        <button class="option-btn" id="galleryBtn">
+            <span class="option-icon">🖼️</span>
+            <span class="option-label">Gallery</span>
+        </button>
+        <button class="option-btn" id="cameraBtn">
+            <span class="option-icon">📷</span>
+            <span class="option-label">Camera</span>
+        </button>
+        <button class="option-btn" id="folderBtn">
+            <span class="option-icon">📁</span>
+            <span class="option-label">Folder</span>
         </button>
     </div>
 
-    <!-- GRID VIEW -->
-    <div class="file-grid" id="fileGrid"></div>
-
-    <!-- LIST VIEW -->
-    <div class="file-list" id="fileList"></div>
-
-    <!-- BOTTOM BAR -->
-    <div class="bottom-bar" id="bottomBar">
-        <div class="selected-info">
-            <span id="selectedCount">0</span> selected
+    <!-- PREVIEW SECTION -->
+    <div class="preview-section" id="previewSection">
+        <div class="preview-header">
+            <div class="preview-title">Selected Photos</div>
+            <div class="preview-count" id="previewCount">0 items</div>
         </div>
-        <div class="action-btns">
-            <button class="action-btn secondary" id="clearBtn">Clear</button>
-            <button class="action-btn" id="doneBtn">Done</button>
-        </div>
+        <div class="preview-grid" id="previewGrid"></div>
     </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar" id="actionBar">
+        <button class="action-btn primary" id="continueBtn">
+            Continue →
+        </button>
+    </div>
+
+    <!-- HIDDEN INPUTS -->
+    <input type="file" id="galleryInput" accept="image/*,video/*" multiple class="hidden-input">
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden-input">
+    <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
 
     <script>
         /* ============================================================
            STATE
            ============================================================ */
-        let allFiles = [];        // All files from folder
-        let filteredFiles = [];   // After filter + search
-        let selectedFiles = new Set();
-        let currentView = 'grid'; // 'grid' or 'list'
-        let currentFilter = 'all';
-        let currentSort = 'name';
+        let selectedFiles = [];
 
         /* ============================================================
            DOM REFS
            ============================================================ */
+        const dropzone = document.getElementById('dropzone');
+        const galleryBtn = document.getElementById('galleryBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const folderBtn = document.getElementById('folderBtn');
+        const galleryInput = document.getElementById('galleryInput');
+        const cameraInput = document.getElementById('cameraInput');
         const folderInput = document.getElementById('folderInput');
-        const openFolderBtn = document.getElementById('openFolderBtn');
-        const fileGrid = document.getElementById('fileGrid');
-        const fileList = document.getElementById('fileList');
-        const folderName = document.getElementById('folderName');
-        const fileCount = document.getElementById('fileCount');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-        const gridViewBtn = document.getElementById('gridViewBtn');
-        const listViewBtn = document.getElementById('listViewBtn');
-        const bottomBar = document.getElementById('bottomBar');
-        const selectedCount = document.getElementById('selectedCount');
-        const clearBtn = document.getElementById('clearBtn');
-        const doneBtn = document.getElementById('doneBtn');
-        const filterChips = document.getElementById('filterChips');
+        const previewSection = document.getElementById('previewSection');
+        const previewGrid = document.getElementById('previewGrid');
+        const previewCount = document.getElementById('previewCount');
+        const actionBar = document.getElementById('actionBar');
+        const continueBtn = document.getElementById('continueBtn');
 
         /* ============================================================
-           FILE TYPE DETECTION
+           TRIGGER INPUTS
            ============================================================ */
-        const FILE_TYPES = {
-            image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'bmp', 'svg', 'ico'],
-            video: ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'm4v'],
-            audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
-            document: ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'md']
-        };
-
-        function getFileCategory(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            for (const [category, extensions] of Object.entries(FILE_TYPES)) {
-                if (extensions.includes(ext)) return category;
-            }
-            return 'other';
-        }
-
-        function getFileIcon(category, ext) {
-            const icons = {
-                video: '🎬', audio: '🎵', document: '📄',
-                other: '📎', image: '🖼️'
-            };
-            const extIcons = {
-                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
-                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
-                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
-                'apk': '📱', 'exe': '⚙️', 'html': '🌐', 'css': '🎨',
-                'js': '⚡', 'json': '📋', 'xml': '📋'
-            };
-            return extIcons[ext] || icons[category] || '📎';
-        }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
-        }
-
-        function formatDate(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            const day = 24 * 60 * 60 * 1000;
-
-            if (diff < day) return 'Today';
-            if (diff < 2 * day) return 'Yesterday';
-            if (diff < 7 * day) return Math.floor(diff / day) + 'd ago';
-
-            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-        }
+        galleryBtn.addEventListener('click', () => galleryInput.click());
+        cameraBtn.addEventListener('click', () => cameraInput.click());
+        folderBtn.addEventListener('click', () => folderInput.click());
+        dropzone.addEventListener('click', () => galleryInput.click());
 
         /* ============================================================
-           OPEN FOLDER
+           FILE HANDLING
            ============================================================ */
-        openFolderBtn.addEventListener('click', () => {
-            folderInput.click();
+        galleryInput.addEventListener('change', (e) => {
+            handleFiles(Array.from(e.target.files));
+            galleryInput.value = '';
         });
 
-        folderInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
+        cameraInput.addEventListener('change', (e) => {
+            handleFiles(Array.from(e.target.files));
+            cameraInput.value = '';
+        });
+
+        folderInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+            handleFiles(files);
+            folderInput.value = '';
+        });
+
+        function handleFiles(files) {
             if (files.length === 0) return;
 
-            // Get folder name from first file's path
-            const firstPath = files[0].webkitRelativePath || '';
-            const folder = firstPath.split('/')[0] || 'Selected Folder';
-            folderName.textContent = folder + ' • ' + files.length + ' items';
+            // Filter only images & videos
+            const valid = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
 
-            // Hide open button, show files
-            document.getElementById('openBtnWrap').style.display = 'none';
+            if (valid.length === 0) {
+                showToast('❌ Sirf photos aur videos allowed hain');
+                return;
+            }
 
-            // Show loading
-            fileGrid.innerHTML = `
-                <div class="loading" style="grid-column: 1/-1;">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Loading files...</div>
-                </div>
-            `;
-
-            // Process files
-            await processFiles(files);
-        });
-
-        async function processFiles(files) {
-            allFiles = [];
-
-            for (const file of files) {
-                const category = getFileCategory(file.name);
-                const ext = file.name.split('.').pop().toLowerCase();
-
-                allFiles.push({
+            // Add to selected
+            valid.forEach(file => {
+                selectedFiles.push({
                     file,
                     name: file.name,
                     size: file.size,
                     type: file.type,
-                    category,
-                    ext,
-                    lastModified: file.lastModified,
-                    path: file.webkitRelativePath
+                    id: Date.now() + Math.random().toString(36).substr(2, 9)
                 });
-            }
-
-            // Update counts
-            updateCategoryCounts();
-
-            // Apply sort + filter
-            applyFiltersAndSort();
-        }
-
-        function updateCategoryCounts() {
-            const counts = { all: allFiles.length, image: 0, video: 0, audio: 0, document: 0 };
-            allFiles.forEach(f => {
-                if (counts[f.category] !== undefined) counts[f.category]++;
             });
-            document.getElementById('countAll').textContent = counts.all;
-            document.getElementById('countImages').textContent = counts.image;
-            document.getElementById('countVideos').textContent = counts.video;
-            document.getElementById('countAudio').textContent = counts.audio;
-            document.getElementById('countDocs').textContent = counts.document;
+
+            renderPreview();
+            showToast(`✅ ${valid.length} ${valid.length === 1 ? 'item' : 'items'} added`);
         }
 
         /* ============================================================
-           FILTER + SORT
+           DRAG & DROP
            ============================================================ */
-        function applyFiltersAndSort() {
-            // Filter
-            let result = allFiles;
+        let dragCounter = 0;
 
-            if (currentFilter !== 'all') {
-                result = result.filter(f => f.category === currentFilter);
-            }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (eventName === 'dragenter') dragCounter++;
+                dropzone.classList.add('dragover');
+            });
+        });
 
-            // Search
-            const query = searchInput.value.trim().toLowerCase();
-            if (query) {
-                result = result.filter(f => f.name.toLowerCase().includes(query));
-            }
-
-            // Sort
-            result = [...result].sort((a, b) => {
-                switch (currentSort) {
-                    case 'name': return a.name.localeCompare(b.name);
-                    case 'name-desc': return b.name.localeCompare(a.name);
-                    case 'date': return b.lastModified - a.lastModified;
-                    case 'date-asc': return a.lastModified - b.lastModified;
-                    case 'size': return b.size - a.size;
-                    case 'size-asc': return a.size - b.size;
-                    default: return 0;
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (eventName === 'dragleave') dragCounter--;
+                if (dragCounter <= 0 || eventName === 'drop') {
+                    dropzone.classList.remove('dragover');
+                    dragCounter = 0;
                 }
             });
+        });
 
-            filteredFiles = result;
-            fileCount.textContent = result.length + ' file' + (result.length !== 1 ? 's' : '');
+        dropzone.addEventListener('drop', (e) => {
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
 
-            renderFiles();
-        }
+        // Prevent default drag on window
+        ['dragover', 'drop'].forEach(eventName => {
+            window.addEventListener(eventName, (e) => e.preventDefault());
+        });
 
         /* ============================================================
-           RENDER
+           RENDER PREVIEW
            ============================================================ */
-        function renderFiles() {
-            if (filteredFiles.length === 0) {
-                const emptyMsg = searchInput.value.trim()
-                    ? 'Koi file nahi mili'
-                    : 'Is category mein kuch nahi hai';
-
-                fileGrid.innerHTML = `
-                    <div class="empty" style="grid-column: 1/-1;">
-                        <div class="empty-icon">📭</div>
-                        <div class="empty-title">${emptyMsg}</div>
-                        <div class="empty-sub">Try different filter or search</div>
-                    </div>
-                `;
-                fileList.innerHTML = '';
+        function renderPreview() {
+            if (selectedFiles.length === 0) {
+                previewSection.classList.remove('show');
+                actionBar.classList.remove('show');
                 return;
             }
 
-            if (currentView === 'grid') {
-                renderGridView();
-            } else {
-                renderListView();
-            }
-        }
+            previewSection.classList.add('show');
+            actionBar.classList.add('show');
+            previewCount.textContent = `${selectedFiles.length} ${selectedFiles.length === 1 ? 'item' : 'items'}`;
 
-        function renderGridView() {
-            fileGrid.innerHTML = '';
-            fileList.classList.remove('show');
-            fileGrid.classList.remove('hide');
+            previewGrid.innerHTML = '';
 
-            filteredFiles.forEach((item, index) => {
+            selectedFiles.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = 'file-item';
-                if (selectedFiles.has(item.path)) div.classList.add('selected');
-                div.dataset.path = item.path;
+                div.className = 'preview-item';
+                div.style.animationDelay = `${Math.min(index * 0.03, 0.5)}s`;
 
-                // Content based on type
-                if (item.category === 'image') {
-                    // Lazy load image thumbnail
+                if (item.type.startsWith('image/')) {
                     const img = document.createElement('img');
                     img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = () => URL.revokeObjectURL(img.src);
+                    const url = URL.createObjectURL(item.file);
+                    img.src = url;
+                    img.onload = () => URL.revokeObjectURL(url);
                     div.appendChild(img);
                 } else {
-                    const icon = document.createElement('div');
-                    icon.className = 'file-icon';
-                    icon.textContent = getFileIcon(item.category, item.ext);
-                    div.appendChild(icon);
+                    // Video — show icon
+                    div.innerHTML = `
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1c1c1e;font-size:32px;">
+                            🎬
+                        </div>
+                    `;
                 }
 
-                // Extension badge
-                const extBadge = document.createElement('div');
-                extBadge.className = 'file-ext';
-                extBadge.textContent = item.ext;
-                div.appendChild(extBadge);
+                // Remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'item-remove';
+                removeBtn.textContent = '✕';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeItem(item.id);
+                });
+                div.appendChild(removeBtn);
 
-                // Select badge
-                const selectBadge = document.createElement('div');
-                selectBadge.className = 'select-badge';
-                selectBadge.textContent = '✓';
-                div.appendChild(selectBadge);
-
-                // Click handler
-                div.addEventListener('click', () => toggleSelect(item.path));
-
-                fileGrid.appendChild(div);
+                previewGrid.appendChild(div);
             });
         }
 
-        function renderListView() {
-            fileList.innerHTML = '';
-            fileGrid.classList.add('hide');
-            fileList.classList.add('show');
-
-            filteredFiles.forEach((item) => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                if (selectedFiles.has(item.path)) div.classList.add('selected');
-
-                // Thumbnail
-                const thumb = document.createElement('div');
-                thumb.className = 'list-thumb';
-                if (item.category === 'image') {
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = () => URL.revokeObjectURL(img.src);
-                    thumb.appendChild(img);
-                } else {
-                    thumb.textContent = getFileIcon(item.category, item.ext);
-                }
-
-                // Info
-                const info = document.createElement('div');
-                info.className = 'list-info';
-                info.innerHTML = `
-                    <div class="list-name">${item.name}</div>
-                    <div class="list-meta">
-                        <span>${formatBytes(item.size)}</span>
-                        <span class="dot">•</span>
-                        <span>${formatDate(item.lastModified)}</span>
-                    </div>
-                `;
-
-                div.appendChild(thumb);
-                div.appendChild(info);
-
-                div.addEventListener('click', () => toggleSelect(item.path));
-                fileList.appendChild(div);
-            });
+        function removeItem(id) {
+            selectedFiles = selectedFiles.filter(item => item.id !== id);
+            renderPreview();
+            showToast('🗑️ Removed');
         }
 
         /* ============================================================
-           SELECTION
+           CONTINUE
            ============================================================ */
-        function toggleSelect(path) {
-            if (selectedFiles.has(path)) {
-                selectedFiles.delete(path);
-            } else {
-                selectedFiles.add(path);
-            }
+        continueBtn.addEventListener('click', () => {
+            if (selectedFiles.length === 0) return;
 
-            // Update UI
-            document.querySelectorAll('.file-item, .list-item').forEach(el => {
-                const p = el.dataset.path;
-                if (p) {
-                    el.classList.toggle('selected', selectedFiles.has(p));
-                }
-            });
+            console.log('📤 Continuing with', selectedFiles.length, 'files');
+            console.log('Files:', selectedFiles.map(f => f.name));
 
-            // Update bottom bar
-            if (selectedFiles.size > 0) {
-                bottomBar.classList.add('show');
-                selectedCount.textContent = selectedFiles.size;
-            } else {
-                bottomBar.classList.remove('show');
-            }
-        }
+            // Yahan apna action — upload, preview, etc.
+            showToast(`✅ ${selectedFiles.length} files ready`);
 
-        clearBtn.addEventListener('click', () => {
-            selectedFiles.clear();
-            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-            bottomBar.classList.remove('show');
-        });
-
-        doneBtn.addEventListener('click', () => {
-            const selected = filteredFiles.filter(f => selectedFiles.has(f.path));
-            showToast(`✅ ${selected.length} file(s) selected`);
-            console.log('Selected files:', selected.map(f => f.name));
-            // Yahan apna action — upload, process, etc.
-        });
-
-        /* ============================================================
-           VIEW TOGGLE
-           ============================================================ */
-        gridViewBtn.addEventListener('click', () => {
-            currentView = 'grid';
-            gridViewBtn.classList.add('active');
-            listViewBtn.classList.remove('active');
-            renderFiles();
-        });
-
-        listViewBtn.addEventListener('click', () => {
-            currentView = 'list';
-            listViewBtn.classList.add('active');
-            gridViewBtn.classList.remove('active');
-            renderFiles();
-        });
-
-        /* ============================================================
-           FILTER CHIPS
-           ============================================================ */
-        filterChips.addEventListener('click', (e) => {
-            const chip = e.target.closest('.chip');
-            if (!chip) return;
-
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-
-            currentFilter = chip.dataset.filter;
-            applyFiltersAndSort();
-        });
-
-        /* ============================================================
-           SEARCH + SORT
-           ============================================================ */
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                applyFiltersAndSort();
-            }, 200);
-        });
-
-        sortSelect.addEventListener('change', () => {
-            currentSort = sortSelect.value;
-            applyFiltersAndSort();
+            // Example: Yahan app ka next step
+            // - Firebase upload
+            // - Compress images
+            // - Show in chat
+            // - etc.
         });
 
         /* ============================================================
@@ -967,6 +683,12 @@
                 setTimeout(() => toast.remove(), 300);
             }, 2000);
         }
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        console.log('✅ Photo picker ready');
+        console.log('📁 Folder support:', 'webkitdirectory' in document.createElement('input'));
     </script>
 </body>
 </html>
