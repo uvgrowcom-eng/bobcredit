@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Full Gallery</title>
+    <title>Folder Explorer</title>
     <style>
         * {
             margin: 0;
@@ -17,109 +17,326 @@
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 40px;
         }
 
         /* ===== HEADER ===== */
         .header {
-            padding: 20px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             position: sticky;
             top: 0;
             background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
+            padding: 16px;
             z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .header h1 {
-            font-size: 20px;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .folder-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .folder-info h1 {
+            font-size: 18px;
             font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .header-sub {
+        .folder-info .sub {
             font-size: 12px;
             color: #8e8e93;
             margin-top: 2px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .header-btn {
-            padding: 10px 16px;
+        .change-btn {
+            padding: 8px 14px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             background: #1c1c1e;
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             font-family: inherit;
+            white-space: nowrap;
+        }
+
+        /* Search */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            background: #1c1c1e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e93;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /* Filter chips */
+        .chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .chips::-webkit-scrollbar { display: none; }
+
+        .chip {
+            flex-shrink: 0;
+            padding: 7px 12px;
+            background: #1c1c1e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            color: #8e8e93;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            gap: 5px;
+            font-family: inherit;
         }
 
-        .header-btn.primary {
+        .chip.active {
             background: linear-gradient(45deg, #f09433, #dc2743);
+            border-color: transparent;
+            color: #fff;
         }
 
-        .header-btn:active {
-            transform: scale(0.95);
+        .chip-count {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
         }
 
-        /* ===== PHOTO GRID ===== */
-        .photo-grid {
+        /* ===== OPEN BUTTON ===== */
+        .open-wrap {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .open-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 4s ease infinite;
+            font-family: inherit;
+        }
+
+        .open-btn:active { transform: scale(0.97); }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* ===== FILE GRID ===== */
+        .file-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-            padding: 8px;
+            gap: 4px;
+            padding: 12px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .photo-item {
+        .file-item {
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
+            cursor: pointer;
             position: relative;
             background: #1c1c1e;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: transform 0.15s;
         }
 
-        .photo-item:active {
-            transform: scale(0.95);
-        }
+        .file-item:active { transform: scale(0.95); }
 
-        .photo-item img {
+        .file-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
 
-        .photo-item .video-badge {
+        .file-icon-big {
+            font-size: 36px;
+            opacity: 0.9;
+        }
+
+        .file-badge {
             position: absolute;
             bottom: 6px;
             left: 6px;
             padding: 2px 6px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             color: #fff;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .file-badge.right {
+            left: auto;
+            right: 6px;
+        }
+
+        .file-badge.folder-badge {
+            background: linear-gradient(45deg, #f09433, #dc2743);
+        }
+
+        /* ===== LIST VIEW ===== */
+        .file-list {
+            padding: 0 12px;
+            max-width: 600px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .file-list.show { display: block; }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .list-item:active { background: #1c1c1e; }
+
+        .list-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1c1c1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .list-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-meta {
+            font-size: 12px;
+            color: #8e8e93;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .list-meta .dot { opacity: 0.5; }
+
+        /* ===== LOADING ===== */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(26, 115, 232, 0.15);
+            border-top-color: #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            color: #8e8e93;
+            font-size: 14px;
+        }
+
+        .loading-progress {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #5f6368;
         }
 
         /* ===== EMPTY ===== */
         .empty {
             grid-column: 1 / -1;
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
         }
 
         .empty-icon {
@@ -139,738 +356,483 @@
             color: #8e8e93;
             line-height: 1.5;
             max-width: 300px;
-            margin: 0 auto 20px;
+            margin: 0 auto;
         }
 
-        .empty-btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(45deg, #f09433, #dc2743);
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2e;
             color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            animation: toastIn 0.3s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* ===== PERMISSION MODAL ===== */
-        #permissionModal {
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ===== PREVIEW MODAL ===== */
+        #previewModal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 24px;
-            z-index: 200;
-            animation: fadeIn 0.3s;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        #permissionModal.show {
-            display: flex;
-        }
+        #previewModal.show { display: flex; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-
-        .perm-popup {
-            background: linear-gradient(180deg, #1c1c1e 0%, #0a0a0a 100%);
-            border-radius: 28px;
-            padding: 32px 24px 24px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .preview-content {
+            max-width: 90vw;
+            max-height: 90vh;
             position: relative;
-            overflow: hidden;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(60px) scale(0.9); opacity: 0; }
-            to   { transform: translateY(0) scale(1); opacity: 1; }
+        .preview-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 12px;
+            display: block;
         }
 
-        .perm-popup::before {
-            content: '';
+        .preview-close {
             position: absolute;
-            top: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(26, 115, 232, 0.3) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .perm-icon {
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 20px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #1a73e8, #34A853);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 44px;
-            box-shadow: 0 10px 40px rgba(26, 115, 232, 0.4);
-            position: relative;
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0); }
-            50%      { transform: translateY(-8px); }
-        }
-
-        .perm-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: -0.3px;
-        }
-
-        .perm-subtitle {
-            font-size: 14px;
-            color: #8e8e93;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            padding: 0 8px;
-        }
-
-        /* Options */
-        .perm-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .perm-option {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 16px;
-            background: rgba(44, 44, 46, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.25s;
-            text-align: left;
-            font-family: inherit;
+            top: -40px;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
             color: #fff;
-            width: 100%;
-        }
-
-        .perm-option:hover {
-            background: rgba(44, 44, 46, 0.9);
-            border-color: rgba(26, 115, 232, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .perm-option:active {
-            transform: scale(0.98);
-        }
-
-        .perm-option-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(26, 115, 232, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .perm-option-text {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .perm-option-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 3px;
-        }
-
-        .perm-option-sub {
-            font-size: 12px;
-            color: #8e8e93;
-            line-height: 1.4;
-        }
-
-        .perm-option-arrow {
-            color: #5f6368;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        /* Badge */
-        .perm-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            background: rgba(52, 168, 83, 0.12);
-            border: 1px solid rgba(52, 168, 83, 0.3);
-            color: #34A853;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 6px;
-        }
-
-        /* Skip */
-        .perm-skip {
-            width: 100%;
-            padding: 14px;
             border: none;
-            border-radius: 14px;
-            background: transparent;
-            color: #8e8e93;
-            font-size: 14px;
+            font-size: 18px;
             cursor: pointer;
-            font-family: inherit;
-            transition: color 0.2s;
+            backdrop-filter: blur(10px);
         }
 
-        .perm-skip:hover {
-            color: #fff;
-        }
-
-        /* Trust */
-        .perm-trust {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 12px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 11px;
-            color: #5f6368;
-        }
-
-        /* ===== HIDDEN INPUTS ===== */
+        /* Hidden input */
         .hidden-input {
             position: absolute;
             left: -9999px;
             opacity: 0;
             pointer-events: none;
         }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c2c2e;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-size: 14px;
-            z-index: 9999;
-            animation: toastIn 0.3s;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            white-space: nowrap;
-        }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* ===== LOADING ===== */
-        .loading {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(26, 115, 232, 0.15);
-            border-top-color: #1a73e8;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #8e8e93;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
 
     <!-- HEADER -->
-    <div class="header">
-        <div>
-            <h1 id="headerTitle">My Photos</h1>
-            <div class="header-sub" id="headerSub">Koi photo nahi</div>
+    <div class="header" id="header" style="display:none;">
+        <div class="header-top">
+            <div class="folder-info">
+                <h1 id="folderName">📁 Folder</h1>
+                <div class="sub" id="folderStats">Loading...</div>
+            </div>
+            <button class="change-btn" id="changeBtn">Change</button>
         </div>
-        <div class="header-actions">
-            <button class="header-btn primary" id="addBtn">
-                <span>➕</span>
-                <span>Add</span>
-            </button>
+
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
+        </div>
+
+        <div class="chips" id="chips">
+            <button class="chip active" data-filter="all">All <span class="chip-count" id="cntAll">0</span></button>
+            <button class="chip" data-filter="image">🖼️ Photos <span class="chip-count" id="cntImg">0</span></button>
+            <button class="chip" data-filter="video">🎬 Videos <span class="chip-count" id="cntVid">0</span></button>
+            <button class="chip" data-filter="audio">🎵 Audio <span class="chip-count" id="cntAud">0</span></button>
+            <button class="chip" data-filter="document">📄 Docs <span class="chip-count" id="cntDoc">0</span></button>
+            <button class="chip" data-filter="other">📎 Other <span class="chip-count" id="cntOth">0</span></button>
         </div>
     </div>
 
-    <!-- PHOTO GRID -->
-    <div class="photo-grid" id="photoGrid">
+    <!-- OPEN BUTTON -->
+    <div class="open-wrap" id="openWrap">
+        <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
+        <button class="open-btn" id="openBtn">
+            📁 Select Folder
+        </button>
+    </div>
+
+    <!-- FILE GRID -->
+    <div class="file-grid" id="fileGrid">
         <div class="empty">
-            <div class="empty-icon">📸</div>
-            <div class="empty-title">Koi photo nahi</div>
-            <div class="empty-sub">Apni poori gallery access karne ke liye button dabao</div>
-            <button class="empty-btn" id="openGalleryBtn">📂 Open Gallery</button>
+            <div class="empty-icon">📁</div>
+            <div class="empty-title">Folder select karo</div>
+            <div class="empty-sub">Saari files — photos, videos, documents — ek saath dikhengi</div>
         </div>
     </div>
 
-    <!-- PERMISSION MODAL -->
-    <div id="permissionModal">
-        <div class="perm-popup">
+    <!-- FILE LIST -->
+    <div class="file-list" id="fileList"></div>
 
-            <div class="perm-icon">📸</div>
-
-            <h2 class="perm-title">Gallery Access</h2>
-            <p class="perm-subtitle">
-                Apni photos dekhne ke liye gallery access do.
-                <strong>100% private</strong> — photos device pe hi rahengi.
-            </p>
-
-            <!-- Options -->
-            <div class="perm-options">
-
-                <!-- Option 1: Full Gallery -->
-                <button class="perm-option" id="fullGalleryOption">
-                    <div class="perm-option-icon">📁</div>
-                    <div class="perm-option-text">
-                        <div class="perm-option-title">
-                            Full Gallery
-                            <span class="perm-badge">ALL</span>
-                        </div>
-                        <div class="perm-option-sub">Poori gallery — saari photos ek saath</div>
-                    </div>
-                    <div class="perm-option-arrow">›</div>
-                </button>
-
-                <!-- Option 2: Select Photos -->
-                <button class="perm-option" id="selectPhotosOption">
-                    <div class="perm-option-icon">🖼️</div>
-                    <div class="perm-option-text">
-                        <div class="perm-option-title">Select Photos</div>
-                        <div class="perm-option-sub">Multiple photos choose karo</div>
-                    </div>
-                    <div class="perm-option-arrow">›</div>
-                </button>
-
-                <!-- Option 3: Camera -->
-                <button class="perm-option" id="cameraOption">
-                    <div class="perm-option-icon">📷</div>
-                    <div class="perm-option-text">
-                        <div class="perm-option-title">Camera</div>
-                        <div class="perm-option-sub">Photo khinch ke add karo</div>
-                    </div>
-                    <div class="perm-option-arrow">›</div>
-                </button>
-
-            </div>
-
-            <!-- Skip -->
-            <button class="perm-skip" id="skipBtn">
-                Maybe later
-            </button>
-
-            <!-- Trust -->
-            <div class="perm-trust">
-                <span>🔒</span>
-                <span>Your photos stay on your device</span>
-            </div>
-
+    <!-- PREVIEW MODAL -->
+    <div id="previewModal">
+        <div class="preview-content">
+            <button class="preview-close" id="previewClose">✕</button>
+            <img id="previewImg" src="" alt="Preview">
         </div>
     </div>
-
-    <!-- HIDDEN INPUTS -->
-    <input type="file" id="galleryInput" accept="image/*,video/*" multiple class="hidden-input">
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden-input">
-    <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
 
     <script>
         /* ============================================================
            STATE
            ============================================================ */
-        let allPhotos = [];
-        let galleryMode = 'none'; // 'folder', 'select', 'camera'
+        let allFiles = [];       // All files from folder
+        let filteredFiles = [];  // After filter + search
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        /* ============================================================
+           FILE TYPE DETECTION
+           ============================================================ */
+        const FILE_TYPES = {
+            image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'bmp', 'svg', 'ico', 'tiff'],
+            video: ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'm4v', '3gp'],
+            audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'opus'],
+            document: ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'md', 'rtf', 'odt']
+        };
+
+        function getFileCategory(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            for (const [category, extensions] of Object.entries(FILE_TYPES)) {
+                if (extensions.includes(ext)) return category;
+            }
+            return 'other';
+        }
+
+        function getFileIcon(category, ext) {
+            const extIcons = {
+                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
+                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
+                'csv': '📊', 'md': '📝', 'rtf': '📄', 'odt': '📄',
+                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️', 'tar': '🗜️', 'gz': '🗜️',
+                'apk': '📱', 'exe': '⚙️', 'dmg': '💿', 'iso': '💿',
+                'html': '🌐', 'css': '🎨', 'js': '⚡', 'json': '📋',
+                'xml': '📋', 'py': '🐍', 'java': '☕', 'cpp': '⚙️',
+                'ttf': '🔤', 'otf': '🔤', 'woff': '🔤'
+            };
+            const catIcons = {
+                video: '🎬', audio: '🎵', document: '📄', other: '📎', image: '🖼️'
+            };
+            return extIcons[ext] || catIcons[category] || '📎';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            const day = 24 * 60 * 60 * 1000;
+            if (diff < day) return 'Today';
+            if (diff < 2 * day) return 'Yesterday';
+            if (diff < 7 * day) return Math.floor(diff / day) + 'd ago';
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        }
 
         /* ============================================================
            DOM REFS
            ============================================================ */
-        const headerTitle = document.getElementById('headerTitle');
-        const headerSub = document.getElementById('headerSub');
-        const addBtn = document.getElementById('addBtn');
-        const openGalleryBtn = document.getElementById('openGalleryBtn');
-        const photoGrid = document.getElementById('photoGrid');
-        const permissionModal = document.getElementById('permissionModal');
-
-        const fullGalleryOption = document.getElementById('fullGalleryOption');
-        const selectPhotosOption = document.getElementById('selectPhotosOption');
-        const cameraOption = document.getElementById('cameraOption');
-        const skipBtn = document.getElementById('skipBtn');
-
-        const galleryInput = document.getElementById('galleryInput');
-        const cameraInput = document.getElementById('cameraInput');
+        const header = document.getElementById('header');
+        const folderName = document.getElementById('folderName');
+        const folderStats = document.getElementById('folderStats');
+        const changeBtn = document.getElementById('changeBtn');
+        const openWrap = document.getElementById('openWrap');
+        const openBtn = document.getElementById('openBtn');
         const folderInput = document.getElementById('folderInput');
+        const fileGrid = document.getElementById('fileGrid');
+        const fileList = document.getElementById('fileList');
+        const searchInput = document.getElementById('searchInput');
+        const chips = document.getElementById('chips');
+        const previewModal = document.getElementById('previewModal');
+        const previewImg = document.getElementById('previewImg');
+        const previewClose = document.getElementById('previewClose');
 
         /* ============================================================
-           INDEXEDDB — folder handle save karne ke liye
+           OPEN FOLDER
            ============================================================ */
-        const DB_NAME = 'gallery_db';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'handles';
-        const HANDLE_KEY = 'gallery_folder';
-
-        function openDB() {
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open(DB_NAME, DB_VERSION);
-                req.onupgradeneeded = () => {
-                    const db = req.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async function saveHandle(key, handle) {
-            const db = await openDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                tx.objectStore(STORE_NAME).put(handle, key);
-                tx.oncomplete = () => resolve();
-                tx.onerror = () => reject(tx.error);
-            });
-        }
-
-        async function getHandle(key) {
-            const db = await openDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_NAME, 'readonly');
-                const req = tx.objectStore(STORE_NAME).get(key);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        /* ============================================================
-           MODAL
-           ============================================================ */
-        function showModal() {
-            permissionModal.classList.add('show');
-        }
-
-        function hideModal() {
-            permissionModal.classList.remove('show');
-        }
-
-        /* ============================================================
-           OPEN GALLERY — user ne button dabaya
-           ============================================================ */
-        openGalleryBtn.addEventListener('click', () => {
-            if (hasGalleryAccess()) {
-                showModal();
-            } else {
-                showModal();
-            }
+        openBtn.addEventListener('click', () => folderInput.click());
+        changeBtn.addEventListener('click', () => {
+            folderInput.value = '';
+            folderInput.click();
         });
 
-        addBtn.addEventListener('click', () => {
-            showModal();
-        });
-
-        /* ============================================================
-           OPTIONS — user ne kuch choose kiya
-           ============================================================ */
-
-        // Option 1: FULL GALLERY (File System Access API)
-        fullGalleryOption.addEventListener('click', async () => {
-            console.log('📁 Full gallery mode');
-
-            if (!window.showDirectoryPicker) {
-                showToast('❌ Full gallery support nahi hai is browser mein');
-                return;
-            }
-
-            hideModal();
-
-            try {
-                // Check saved handle
-                const saved = await getHandle(HANDLE_KEY);
-
-                if (saved) {
-                    const perm = await saved.queryPermission({ mode: 'read' });
-                    if (perm === 'granted') {
-                        await loadFromFolder(saved);
-                        return;
-                    }
-                }
-
-                // Naya folder picker
-                const dirHandle = await window.showDirectoryPicker({
-                    mode: 'read',
-                    startIn: 'pictures'
-                });
-
-                await saveHandle(HANDLE_KEY, dirHandle);
-                await loadFromFolder(dirHandle);
-
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error('Error:', err);
-                showToast('❌ Error: ' + err.message);
-            }
-        });
-
-        // Option 2: SELECT PHOTOS
-        selectPhotosOption.addEventListener('click', () => {
-            console.log('🖼️ Select mode');
-            hideModal();
-            setTimeout(() => galleryInput.click(), 200);
-        });
-
-        // Option 3: CAMERA
-        cameraOption.addEventListener('click', () => {
-            console.log('📷 Camera mode');
-            hideModal();
-            setTimeout(() => cameraInput.click(), 200);
-        });
-
-        // Skip
-        skipBtn.addEventListener('click', () => {
-            hideModal();
-            showToast('📸 Gallery skip ki');
-        });
-
-        /* ============================================================
-           LOAD FROM FOLDER — File System Access API
-           ============================================================ */
-        async function loadFromFolder(dirHandle) {
-            photoGrid.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Photos load ho rahi hain...</div>
-                </div>
-            `;
-
-            try {
-                // Check permission
-                const perm = await dirHandle.queryPermission({ mode: 'read' });
-                if (perm !== 'granted') {
-                    const req = await dirHandle.requestPermission({ mode: 'read' });
-                    if (req !== 'granted') {
-                        showToast('❌ Permission denied');
-                        renderEmpty();
-                        return;
-                    }
-                }
-
-                const files = [];
-
-                // Recursively collect all files
-                async function collectFiles(handle, path = '') {
-                    for await (const entry of handle.values()) {
-                        if (entry.kind === 'file') {
-                            if (/\.(jpg|jpeg|png|gif|webp|heic|bmp|mp4|mov|avi|mkv|webm)$/i.test(entry.name)) {
-                                files.push(entry);
-                            }
-                        } else if (entry.kind === 'directory') {
-                            // Sub-folder mein jao
-                            try {
-                                await collectFiles(entry, path + entry.name + '/');
-                            } catch (e) {
-                                console.warn('Skipping folder:', entry.name);
-                            }
-                        }
-                    }
-                }
-
-                await collectFiles(dirHandle);
-
-                console.log(`📁 Found ${files.length} files`);
-
-                if (files.length === 0) {
-                    photoGrid.innerHTML = `
-                        <div class="empty">
-                            <div class="empty-icon">📭</div>
-                            <div class="empty-title">Koi photo nahi mili</div>
-                            <div class="empty-sub">Is folder mein photos nahi hain</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Clear grid
-                photoGrid.innerHTML = '';
-                allPhotos = [];
-
-                // Sort by name (newest first)
-                files.sort((a, b) => b.name.localeCompare(a.name));
-
-                let photoCount = 0;
-                let videoCount = 0;
-
-                // Render one by one
-                for (const entry of files) {
-                    try {
-                        const file = await entry.getFile();
-                        const url = URL.createObjectURL(file);
-                        const isVideo = /\.(mp4|mov|avi|mkv|webm)$/i.test(entry.name);
-
-                        allPhotos.push({ file, url, name: entry.name, isVideo });
-
-                        const div = document.createElement('div');
-                        div.className = 'photo-item';
-
-                        if (isVideo) {
-                            div.innerHTML = `
-                                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1c1c1e;font-size:36px;">
-                                    🎬
-                                </div>
-                                <div class="video-badge">VIDEO</div>
-                            `;
-                            videoCount++;
-                        } else {
-                            const img = document.createElement('img');
-                            img.loading = 'lazy';
-                            img.src = url;
-                            div.appendChild(img);
-                            photoCount++;
-                        }
-
-                        photoGrid.appendChild(div);
-
-                        // UI yield every 20
-                        if ((photoCount + videoCount) % 20 === 0) {
-                            await new Promise(r => setTimeout(r, 1));
-                        }
-
-                    } catch (e) {
-                        console.warn('Skip:', entry.name);
-                    }
-                }
-
-                // Update header
-                headerTitle.textContent = dirHandle.name || 'Gallery';
-                headerSub.textContent = `${photoCount} photos • ${videoCount} videos`;
-
-                showToast(`✅ ${photoCount + videoCount} items loaded`);
-
-            } catch (err) {
-                console.error('Load error:', err);
-                showToast('❌ Error: ' + err.message);
-            }
-        }
-
-        /* ============================================================
-           GALLERY INPUT (Select Photos mode)
-           ============================================================ */
-        galleryInput.addEventListener('change', (e) => {
+        folderInput.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
-            handleSelectedFiles(files);
-            galleryInput.value = '';
-        });
-
-        cameraInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            handleSelectedFiles(files);
-            cameraInput.value = '';
-        });
-
-        function handleSelectedFiles(files) {
             if (files.length === 0) return;
 
-            const valid = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+            // Get folder name
+            const firstPath = files[0].webkitRelativePath || '';
+            const folder = firstPath.split('/')[0] || 'Folder';
 
-            if (valid.length === 0) {
-                showToast('❌ Sirf photos aur videos allowed hain');
-                return;
-            }
+            // Show loading
+            folderName.textContent = '📁 ' + folder;
+            folderStats.textContent = 'Loading...';
+            header.style.display = 'block';
+            openWrap.style.display = 'none';
 
-            // Clear empty state
-            if (allPhotos.length === 0) {
-                photoGrid.innerHTML = '';
-            }
+            fileGrid.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Processing files...</div>
+                    <div class="loading-progress" id="loadProgress">0 / ${files.length}</div>
+                </div>
+            `;
 
-            let photoCount = 0;
-            let videoCount = 0;
+            // Process files
+            allFiles = [];
 
-            valid.forEach((file) => {
-                const url = URL.createObjectURL(file);
-                const isVideo = file.type.startsWith('video/');
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const category = getFileCategory(file.name);
+                const ext = file.name.split('.').pop().toLowerCase();
 
-                allPhotos.push({ file, url, name: file.name, isVideo });
+                allFiles.push({
+                    file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    category,
+                    ext,
+                    lastModified: file.lastModified,
+                    path: file.webkitRelativePath,
+                    url: null  // lazy
+                });
 
-                const div = document.createElement('div');
-                div.className = 'photo-item';
-
-                if (isVideo) {
-                    div.innerHTML = `
-                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1c1c1e;font-size:36px;">
-                            🎬
-                        </div>
-                        <div class="video-badge">VIDEO</div>
-                    `;
-                    videoCount++;
-                } else {
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = url;
-                    div.appendChild(img);
-                    photoCount++;
+                // Update progress every 50 files
+                if (i % 50 === 0) {
+                    const progress = document.getElementById('loadProgress');
+                    if (progress) progress.textContent = `${i} / ${files.length}`;
+                    await new Promise(r => setTimeout(r, 0));
                 }
+            }
 
-                photoGrid.appendChild(div);
+            console.log(`✅ Loaded ${allFiles.length} files`);
+
+            // Update counts
+            updateCounts();
+
+            // Render
+            applyFilters();
+        });
+
+        /* ============================================================
+           COUNTS
+           ============================================================ */
+        function updateCounts() {
+            const counts = { all: allFiles.length, image: 0, video: 0, audio: 0, document: 0, other: 0 };
+            allFiles.forEach(f => {
+                if (counts[f.category] !== undefined) counts[f.category]++;
             });
+            document.getElementById('cntAll').textContent = counts.all;
+            document.getElementById('cntImg').textContent = counts.image;
+            document.getElementById('cntVid').textContent = counts.video;
+            document.getElementById('cntAud').textContent = counts.audio;
+            document.getElementById('cntDoc').textContent = counts.document;
+            document.getElementById('cntOth').textContent = counts.other;
 
-            // Update header
-            headerTitle.textContent = 'My Photos';
-            headerSub.textContent = `${allPhotos.length} items`;
-
-            showToast(`✅ ${valid.length} ${valid.length === 1 ? 'item' : 'items'} added`);
+            // Header stats
+            const parts = [];
+            if (counts.image) parts.push(`${counts.image} photos`);
+            if (counts.video) parts.push(`${counts.video} videos`);
+            if (counts.document) parts.push(`${counts.document} docs`);
+            if (counts.audio) parts.push(`${counts.audio} audio`);
+            if (counts.other) parts.push(`${counts.other} other`);
+            folderStats.textContent = parts.join(' • ') || `${counts.all} files`;
         }
 
         /* ============================================================
-           EMPTY STATE
+           FILTER + SEARCH
            ============================================================ */
-        function renderEmpty() {
-            photoGrid.innerHTML = `
-                <div class="empty">
-                    <div class="empty-icon">📸</div>
-                    <div class="empty-title">Koi photo nahi</div>
-                    <div class="empty-sub">Apni poori gallery access karne ke liye button dabao</div>
-                    <button class="empty-btn" onclick="document.getElementById('permissionModal').classList.add('show')">
-                        📂 Open Gallery
-                    </button>
-                </div>
-            `;
+        function applyFilters() {
+            let result = allFiles;
+
+            if (currentFilter !== 'all') {
+                result = result.filter(f => f.category === currentFilter);
+            }
+
+            if (searchQuery) {
+                result = result.filter(f => f.name.toLowerCase().includes(searchQuery));
+            }
+
+            filteredFiles = result;
+            renderFiles();
         }
+
+        /* ============================================================
+           RENDER
+           ============================================================ */
+        function renderFiles() {
+            if (filteredFiles.length === 0) {
+                fileGrid.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-title">Koi file nahi mili</div>
+                        <div class="empty-sub">Try different filter ya search</div>
+                    </div>
+                `;
+                fileList.innerHTML = '';
+                return;
+            }
+
+            fileGrid.innerHTML = '';
+            fileList.innerHTML = '';
+
+            // Limit for performance — first 500
+            const limit = 500;
+            const toRender = filteredFiles.slice(0, limit);
+
+            toRender.forEach((item, index) => {
+                // Grid item
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'file-item';
+                gridDiv.style.animationDelay = `${Math.min(index * 0.005, 0.3)}s`;
+
+                if (item.category === 'image') {
+                    const img = document.createElement('img');
+                    img.loading = 'lazy';
+                    img.src = URL.createObjectURL(item.file);
+                    img.onload = function() { URL.revokeObjectURL(this.src); };
+                    gridDiv.appendChild(img);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-icon-big';
+                    icon.textContent = getFileIcon(item.category, item.ext);
+                    gridDiv.appendChild(icon);
+                }
+
+                const badge = document.createElement('div');
+                badge.className = 'file-badge';
+                badge.textContent = item.ext;
+                gridDiv.appendChild(badge);
+
+                gridDiv.addEventListener('click', () => handleFileClick(item));
+                fileGrid.appendChild(gridDiv);
+            });
+
+            // List items
+            toRender.forEach((item) => {
+                const listDiv = document.createElement('div');
+                listDiv.className = 'list-item';
+
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'list-icon';
+                if (item.category === 'image') {
+                    const img = document.createElement('img');
+                    img.loading = 'lazy';
+                    img.src = URL.createObjectURL(item.file);
+                    img.onload = function() { URL.revokeObjectURL(this.src); };
+                    iconDiv.appendChild(img);
+                } else {
+                    iconDiv.textContent = getFileIcon(item.category, item.ext);
+                }
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'list-info';
+                infoDiv.innerHTML = `
+                    <div class="list-name">${escapeHtml(item.name)}</div>
+                    <div class="list-meta">
+                        <span>${formatBytes(item.size)}</span>
+                        <span class="dot">•</span>
+                        <span>${formatDate(item.lastModified)}</span>
+                    </div>
+                `;
+
+                listDiv.appendChild(iconDiv);
+                listDiv.appendChild(infoDiv);
+                listDiv.addEventListener('click', () => handleFileClick(item));
+                fileList.appendChild(listDiv);
+            });
+
+            // Show limit warning
+            if (filteredFiles.length > limit) {
+                const warn = document.createElement('div');
+                warn.style.cssText = 'grid-column:1/-1;text-align:center;padding:20px;color:#8e8e93;font-size:12px;';
+                warn.textContent = `Showing first ${limit} of ${filteredFiles.length} files`;
+                fileGrid.appendChild(warn);
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        /* ============================================================
+           FILE CLICK
+           ============================================================ */
+        function handleFileClick(item) {
+            if (item.category === 'image') {
+                // Show preview
+                const url = URL.createObjectURL(item.file);
+                previewImg.src = url;
+                previewModal.classList.add('show');
+            } else {
+                showToast(`📄 ${item.name} • ${formatBytes(item.size)}`);
+            }
+        }
+
+        previewClose.addEventListener('click', () => {
+            previewModal.classList.remove('show');
+            previewImg.src = '';
+        });
+
+        previewModal.addEventListener('click', (e) => {
+            if (e.target === previewModal) {
+                previewModal.classList.remove('show');
+                previewImg.src = '';
+            }
+        });
+
+        /* ============================================================
+           FILTER CHIPS
+           ============================================================ */
+        chips.addEventListener('click', (e) => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+
+            chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+
+            currentFilter = chip.dataset.filter;
+            applyFilters();
+        });
+
+        /* ============================================================
+           SEARCH
+           ============================================================ */
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchQuery = searchInput.value.trim().toLowerCase();
+                applyFilters();
+            }, 200);
+        });
 
         /* ============================================================
            TOAST
@@ -892,38 +854,9 @@
         }
 
         /* ============================================================
-           PERMISSION CHECK
-           ============================================================ */
-        function hasGalleryAccess() {
-            return localStorage.getItem('gallery_access') === 'granted';
-        }
-
-        /* ============================================================
            INIT
            ============================================================ */
-        async function init() {
-            console.log('🚀 Initializing gallery...');
-
-            // Check saved folder
-            try {
-                const saved = await getHandle(HANDLE_KEY);
-                if (saved) {
-                    const perm = await saved.queryPermission({ mode: 'read' });
-                    if (perm === 'granted') {
-                        console.log('✅ Saved folder found, loading...');
-                        await loadFromFolder(saved);
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.warn('Init error:', e);
-            }
-
-            // Show modal after short delay
-            setTimeout(() => showModal(), 500);
-        }
-
-        init();
+        console.log('✅ Folder Explorer ready');
     </script>
 </body>
 </html>
