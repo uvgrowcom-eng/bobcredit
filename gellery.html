@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Folder Explorer</title>
+    <title>My Gallery</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,132 @@
             min-height: 100vh;
         }
 
-        /* ===== HEADER ===== */
+        /* ===== WELCOME SCREEN ===== */
+        .welcome {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-12px); }
+        }
+
+        .welcome h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #fff, #8e8e93);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: #8e8e93;
+            line-height: 1.6;
+            max-width: 340px;
+            margin-bottom: 32px;
+        }
+
+        .benefits {
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .benefit:last-child { border-bottom: none; }
+
+        .benefit-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .benefit-text strong {
+            display: block;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .benefit-text span {
+            font-size: 12px;
+            color: #8e8e93;
+            line-height: 1.4;
+        }
+
+        .open-btn {
+            padding: 20px 44px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 15px 40px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 4s ease infinite, btnPulse 2s infinite;
+            font-family: inherit;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 15px 40px rgba(220, 39, 67, 0.4), 0 0 0 0 rgba(220, 39, 67, 0.6); }
+            50%      { box-shadow: 0 15px 40px rgba(220, 39, 67, 0.6), 0 0 0 15px rgba(220, 39, 67, 0); }
+        }
+
+        .open-btn:active {
+            transform: scale(0.97);
+        }
+
+        .trust {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #5f6368;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== GALLERY SCREEN ===== */
+        #galleryScreen {
+            display: none;
+        }
+
+        #galleryScreen.show {
+            display: block;
+        }
+
         .header {
             position: sticky;
             top: 0;
@@ -27,52 +152,9 @@
             backdrop-filter: blur(20px);
             z-index: 100;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 12px 16px;
+            padding: 14px 16px;
         }
 
-        /* Breadcrumb */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #8e8e93;
-            margin-bottom: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .breadcrumb::-webkit-scrollbar { display: none; }
-
-        .breadcrumb-item {
-            color: #8e8e93;
-            cursor: pointer;
-            white-space: nowrap;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-family: inherit;
-            background: transparent;
-            border: none;
-            font-size: 12px;
-        }
-
-        .breadcrumb-item:hover {
-            background: #1c1c1e;
-            color: #fff;
-        }
-
-        .breadcrumb-item.current {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .breadcrumb-sep {
-            color: #5f6368;
-            font-size: 10px;
-        }
-
-        /* Header top */
         .header-top {
             display: flex;
             justify-content: space-between;
@@ -80,71 +162,71 @@
             gap: 12px;
         }
 
-        .current-folder {
+        .folder-title {
             flex: 1;
             min-width: 0;
         }
 
-        .current-folder h1 {
+        .folder-title h1 {
             font-size: 18px;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .current-folder .stats {
-            font-size: 11px;
+        .folder-title .stats {
+            font-size: 12px;
             color: #8e8e93;
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
-        .header-actions {
+        .header-btns {
             display: flex;
             gap: 6px;
         }
 
-        .header-btn {
-            padding: 8px 12px;
+        .hdr-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             border: none;
-            border-radius: 10px;
             background: #1c1c1e;
             color: #fff;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 18px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: inherit;
-            white-space: nowrap;
+            transition: background 0.2s;
         }
 
-        .header-btn.primary {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-        }
-
-        .header-btn:active { transform: scale(0.95); }
+        .hdr-btn:hover { background: #2c2c2e; }
+        .hdr-btn:active { transform: scale(0.94); }
 
         /* Search */
         .search-wrap {
             position: relative;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 14px 10px 38px;
+            padding: 11px 14px 11px 38px;
             background: #1c1c1e;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #fff;
-            font-size: 13px;
+            font-size: 14px;
             font-family: inherit;
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        .search-input:focus { border-color: #1a73e8; }
+        .search-input:focus {
+            border-color: #1a73e8;
+        }
 
         .search-icon {
             position: absolute;
@@ -152,106 +234,147 @@
             top: 50%;
             transform: translateY(-50%);
             color: #8e8e93;
-            font-size: 14px;
+            font-size: 15px;
             pointer-events: none;
         }
 
-        /* ===== FILE LIST (Vertical) ===== */
-        .file-container {
-            padding: 8px 0;
-        }
-
-        .list-item {
+        /* Breadcrumb */
+        .breadcrumb {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 4px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #8e8e93;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .breadcrumb::-webkit-scrollbar { display: none; }
+
+        .bc-item {
+            background: transparent;
+            border: none;
+            color: #8e8e93;
+            font-size: 12px;
             cursor: pointer;
-            transition: background 0.15s;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: all 0.2s;
         }
 
-        .list-item:active {
-            background: #1c1c1e;
+        .bc-item:hover { background: #1c1c1e; color: #fff; }
+
+        .bc-item.current {
+            color: #fff;
+            font-weight: 600;
         }
 
-        .list-thumb {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
+        .bc-sep {
+            color: #5f6368;
+            font-size: 10px;
+        }
+
+        /* ===== PHOTO GRID ===== */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            padding: 8px;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
             overflow: hidden;
-            background: #1c1c1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
+            cursor: pointer;
             position: relative;
+            background: #1c1c1e;
+            transition: transform 0.15s;
+            animation: itemIn 0.3s backwards;
         }
 
-        .list-thumb img {
+        @keyframes itemIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .photo-item:active {
+            transform: scale(0.95);
+        }
+
+        .photo-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        .list-thumb.folder {
+        .photo-item .folder-icon {
+            width: 100%;
+            height: 100%;
             background: linear-gradient(135deg, #f09433, #dc2743);
-            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            position: relative;
         }
 
-        .list-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .list-name {
-            font-size: 14px;
-            font-weight: 500;
+        .photo-item .folder-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px 8px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            font-size: 11px;
+            font-weight: 600;
             color: #fff;
-            margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-align: center;
         }
 
-        .list-meta {
-            font-size: 12px;
-            color: #8e8e93;
+        .photo-item .file-icon {
+            width: 100%;
+            height: 100%;
             display: flex;
-            gap: 8px;
             align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .list-meta .dot { opacity: 0.5; }
-
-        .list-meta .item-count {
+            justify-content: center;
+            font-size: 36px;
             background: #1c1c1e;
-            padding: 1px 8px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #8e8e93;
         }
 
-        .list-arrow {
-            color: #5f6368;
-            font-size: 18px;
-            flex-shrink: 0;
+        .photo-item .item-badge {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            padding: 3px 7px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* ===== LOADING ===== */
         .loading {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
 
         .spinner {
-            width: 44px;
-            height: 44px;
-            border: 4px solid rgba(26, 115, 232, 0.15);
-            border-top-color: #1a73e8;
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(220, 39, 67, 0.15);
+            border-top-color: #dc2743;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto 16px;
@@ -262,12 +385,19 @@
         .loading-text {
             color: #8e8e93;
             font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .loading-progress {
+            font-size: 12px;
+            color: #5f6368;
         }
 
         /* ===== EMPTY ===== */
         .empty {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
 
         .empty-icon {
@@ -290,65 +420,34 @@
             margin: 0 auto;
         }
 
-        /* ===== OPEN SCREEN ===== */
-        .open-screen {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        /* ===== RECONNECT BANNER ===== */
+        .reconnect-banner {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 16px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 14px;
+            font-size: 13px;
+            color: #FFC107;
+            display: none;
             align-items: center;
-            justify-content: center;
-            padding: 24px;
-            text-align: center;
+            justify-content: space-between;
+            gap: 12px;
         }
 
-        .open-screen-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
+        .reconnect-banner.show { display: flex; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .open-screen h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .open-screen p {
-            font-size: 14px;
-            color: #8e8e93;
-            line-height: 1.6;
-            max-width: 320px;
-            margin-bottom: 30px;
-        }
-
-        .open-btn {
-            padding: 18px 40px;
+        .reconnect-btn {
+            padding: 8px 16px;
             border: none;
-            border-radius: 16px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 16px;
+            border-radius: 8px;
+            background: #FFC107;
+            color: #1a1a1a;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
             font-family: inherit;
-        }
-
-        .open-btn:active { transform: scale(0.97); }
-
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
 
         /* ===== PREVIEW MODAL ===== */
@@ -416,64 +515,117 @@
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        .hidden-input {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
-            pointer-events: none;
+        /* ===== UNSUPPORTED ===== */
+        .unsupported {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 14px;
+            color: #FF3B30;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-    <!-- OPEN SCREEN -->
-    <div class="open-screen" id="openScreen">
-        <div class="open-screen-icon">📁</div>
-        <h1>Folder Explorer</h1>
-        <p>Apna folder select karo — photos, videos, documents, sab kuch dikhega</p>
-        <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
+    <!-- ===== WELCOME SCREEN ===== -->
+    <div class="welcome" id="welcomeScreen">
+        <div class="welcome-icon">📸</div>
+        <h1>Full Gallery Access</h1>
+        <p>Ek baar folder select karo — saari photos hamesha ke liye access ho jaayengi</p>
+
+        <div class="benefits">
+            <div class="benefit">
+                <span class="benefit-icon">📂</span>
+                <div class="benefit-text">
+                    <strong>Poori gallery ek saath</strong>
+                    <span>Saari photos ek jagah dikhengi</span>
+                </div>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">🔒</span>
+                <div class="benefit-text">
+                    <strong>100% private</strong>
+                    <span>Photos device pe hi rahengi, upload nahi hongi</span>
+                </div>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">⚡</span>
+                <div class="benefit-text">
+                    <strong>Ek baar Allow</strong>
+                    <span>Baar baar select nahi karna padega</span>
+                </div>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">🔄</span>
+                <div class="benefit-text">
+                    <strong>Auto-load</strong>
+                    <span>Next time khulte hi photos ready</span>
+                </div>
+            </div>
+        </div>
+
         <button class="open-btn" id="openBtn">
-            📁 Select Folder
+            <span>📁</span>
+            <span>Open My Gallery</span>
         </button>
+
+        <div class="trust">
+            <span>🔒</span>
+            <span>Photos stay on your device</span>
+        </div>
+
+        <div class="unsupported" id="unsupported" style="display:none;">
+            ⚠️ Ye browser support nahi karta. <br>
+            <strong>Chrome</strong> ya <strong>Edge</strong> use karo.
+        </div>
     </div>
 
-    <!-- EXPLORER SCREEN -->
-    <div id="explorerScreen" style="display:none;">
+    <!-- ===== GALLERY SCREEN ===== -->
+    <div id="galleryScreen">
         <div class="header">
-            <!-- Breadcrumb -->
-            <div class="breadcrumb" id="breadcrumb"></div>
-
             <div class="header-top">
-                <div class="current-folder">
-                    <h1 id="currentFolderName">📁 Folder</h1>
-                    <div class="stats" id="currentStats">0 items</div>
+                <div class="folder-title">
+                    <h1 id="folderName">📁 Gallery</h1>
+                    <div class="stats" id="folderStats">Loading...</div>
                 </div>
-                <div class="header-actions">
-                    <button class="header-btn" id="backBtn" style="display:none;">← Back</button>
-                    <button class="header-btn primary" id="changeBtn">Change</button>
+                <div class="header-btns">
+                    <button class="hdr-btn" id="backBtn" style="display:none;" title="Back">←</button>
+                    <button class="hdr-btn" id="changeBtn" title="Change folder">🔄</button>
                 </div>
             </div>
 
-            <!-- Search -->
             <div class="search-wrap">
                 <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search in this folder...">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search in gallery...">
             </div>
+
+            <div class="breadcrumb" id="breadcrumb"></div>
         </div>
 
-        <!-- File Container -->
-        <div class="file-container" id="fileContainer">
+        <!-- Reconnect banner -->
+        <div class="reconnect-banner" id="reconnectBanner">
+            <span>⚠️ Permission expire ho gayi — Reconnect karo</span>
+            <button class="reconnect-btn" id="reconnectBtn">Reconnect</button>
+        </div>
+
+        <!-- Photo grid -->
+        <div class="photo-grid" id="photoGrid">
             <div class="loading">
                 <div class="spinner"></div>
-                <div class="loading-text">Loading...</div>
+                <div class="loading-text">Loading gallery...</div>
             </div>
         </div>
     </div>
 
-    <!-- PREVIEW MODAL -->
+    <!-- ===== PREVIEW MODAL ===== -->
     <div id="previewModal">
         <div class="preview-content">
             <button class="preview-close" id="previewClose">✕</button>
@@ -484,286 +636,304 @@
 
     <script>
         /* ============================================================
-           STATE
+           INDEXEDDB — Directory Handle save karne ke liye
            ============================================================ */
-        let rootFiles = [];           // All files from initial folder
-        let currentPath = [];         // ['Pictures', 'Camera']
-        let currentItems = [];        // Items in current view
-        let searchQuery = '';
+        const DB_NAME = 'gallery_db';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'handles';
+        const HANDLE_KEY = 'gallery_root';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function saveHandle(key, handle) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(handle, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        async function getHandle(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function deleteHandle(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).delete(key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
 
         /* ============================================================
-           FILE TYPE DETECTION
+           STATE
            ============================================================ */
-        const FILE_TYPES = {
-            image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'bmp', 'svg', 'ico', 'tiff'],
-            video: ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'm4v', '3gp'],
-            audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'opus'],
-            document: ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'md', 'rtf', 'odt']
-        };
-
-        function getFileCategory(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            for (const [category, extensions] of Object.entries(FILE_TYPES)) {
-                if (extensions.includes(ext)) return category;
-            }
-            return 'other';
-        }
-
-        function getFileIcon(category, ext) {
-            const extIcons = {
-                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
-                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
-                'csv': '📊', 'md': '📝',
-                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
-                'apk': '📱', 'exe': '⚙️',
-                'html': '🌐', 'css': '🎨', 'js': '⚡', 'json': '📋'
-            };
-            const catIcons = {
-                video: '🎬', audio: '🎵', document: '📄', other: '📎', image: '🖼️'
-            };
-            return extIcons[ext] || catIcons[category] || '📎';
-        }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
-        }
-
-        function formatDate(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            const day = 24 * 60 * 60 * 1000;
-            if (diff < day) return 'Today';
-            if (diff < 2 * day) return 'Yesterday';
-            if (diff < 7 * day) return Math.floor(diff / day) + 'd ago';
-            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-        }
+        let rootHandle = null;        // Directory handle
+        let currentPath = [];         // Path within root
+        let currentEntries = [];      // Items in current view
+        let searchQuery = '';
+        let itemCache = new Map();    // Cache for file objects
 
         /* ============================================================
            DOM REFS
            ============================================================ */
-        const openScreen = document.getElementById('openScreen');
-        const explorerScreen = document.getElementById('explorerScreen');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const galleryScreen = document.getElementById('galleryScreen');
         const openBtn = document.getElementById('openBtn');
-        const folderInput = document.getElementById('folderInput');
-        const changeBtn = document.getElementById('changeBtn');
-        const backBtn = document.getElementById('backBtn');
-        const breadcrumb = document.getElementById('breadcrumb');
-        const currentFolderName = document.getElementById('currentFolderName');
-        const currentStats = document.getElementById('currentStats');
+        const folderName = document.getElementById('folderName');
+        const folderStats = document.getElementById('folderStats');
         const searchInput = document.getElementById('searchInput');
-        const fileContainer = document.getElementById('fileContainer');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const photoGrid = document.getElementById('photoGrid');
+        const backBtn = document.getElementById('backBtn');
+        const changeBtn = document.getElementById('changeBtn');
         const previewModal = document.getElementById('previewModal');
         const previewImg = document.getElementById('previewImg');
         const previewVideo = document.getElementById('previewVideo');
         const previewClose = document.getElementById('previewClose');
+        const reconnectBanner = document.getElementById('reconnectBanner');
+        const reconnectBtn = document.getElementById('reconnectBtn');
+        const unsupported = document.getElementById('unsupported');
 
         /* ============================================================
-           OPEN FOLDER
+           CHECK SUPPORT
            ============================================================ */
-        openBtn.addEventListener('click', () => folderInput.click());
+        const isSupported = 'showDirectoryPicker' in window;
 
-        changeBtn.addEventListener('click', () => {
-            folderInput.value = '';
-            folderInput.click();
+        if (!isSupported) {
+            openBtn.disabled = true;
+            openBtn.style.opacity = '0.4';
+            unsupported.style.display = 'block';
+        }
+
+        /* ============================================================
+           OPEN GALLERY — Main action
+           ============================================================ */
+        openBtn.addEventListener('click', async () => {
+            if (!isSupported) return;
+
+            try {
+                // 🔥 YAHAN "Allow" DIALOG AATA HAI
+                const dirHandle = await window.showDirectoryPicker({
+                    mode: 'read',
+                    startIn: 'pictures'
+                });
+
+                // Save for next time
+                await saveHandle(HANDLE_KEY, dirHandle);
+                rootHandle = dirHandle;
+
+                // Switch to gallery screen
+                welcomeScreen.style.display = 'none';
+                galleryScreen.classList.add('show');
+
+                // Load contents
+                await loadFolder(dirHandle, []);
+
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    console.log('User cancelled');
+                    return;
+                }
+                console.error('Error:', err);
+                showToast('❌ ' + err.message);
+            }
         });
 
-        folderInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length === 0) return;
+        /* ============================================================
+           LOAD FOLDER — Contents dikhao
+           ============================================================ */
+        async function loadFolder(dirHandle, pathArray) {
+            currentPath = pathArray;
 
-            // Reset
-            rootFiles = [];
-            currentPath = [];
-            searchQuery = '';
-            searchInput.value = '';
-
-            // Show loading
-            openScreen.style.display = 'none';
-            explorerScreen.style.display = 'block';
-            fileContainer.innerHTML = `
+            photoGrid.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div class="loading-text">Processing ${files.length} files...</div>
+                    <div class="loading-text">Loading ${dirHandle.name}...</div>
                 </div>
             `;
 
-            // Process files — build tree structure
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const relativePath = file.webkitRelativePath || '';
-                const parts = relativePath.split('/').filter(Boolean);
-
-                // First part = root folder name
-                const rootFolderName = parts[0];
-                // Rest = path within
-                const innerPath = parts.slice(1);
-
-                rootFiles.push({
-                    file,
-                    name: file.name,
-                    pathParts: innerPath,           // ['Camera', 'photo1.jpg']
-                    rootFolder: rootFolderName,
-                    size: file.size,
-                    type: file.type,
-                    category: getFileCategory(file.name),
-                    ext: file.name.split('.').pop().toLowerCase(),
-                    lastModified: file.lastModified,
-                    isFile: true
-                });
-
-                // Yield every 100
-                if (i % 100 === 0) await new Promise(r => setTimeout(r, 0));
-            }
-
-            console.log(`✅ Loaded ${rootFiles.length} files`);
-            console.log(`📁 Root folder: ${rootFiles[0]?.rootFolder}`);
-
-            // Navigate to root
-            navigateTo([]);
-        });
-
-        /* ============================================================
-           NAVIGATE
-           ============================================================ */
-        function navigateTo(pathArray) {
-            currentPath = pathArray;
-            searchQuery = '';
-            searchInput.value = '';
-            renderCurrentFolder();
-        }
-
-        function renderCurrentFolder() {
-            // Filter files matching current path
-            const matchingFiles = rootFiles.filter(f => {
-                // Check if file's path starts with currentPath
-                if (f.pathParts.length < currentPath.length + 1) return false;
-                for (let i = 0; i < currentPath.length; i++) {
-                    if (f.pathParts[i] !== currentPath[i]) return false;
-                }
-                return true;
-            });
-
-            // Group by next segment
-            const folders = new Map();  // name -> { files: [], subfolders: Set }
-            const files = [];
-
-            matchingFiles.forEach(f => {
-                const remainingPath = f.pathParts.slice(currentPath.length);
-
-                if (remainingPath.length === 1) {
-                    // File is directly in current folder
-                    files.push(f);
-                } else if (remainingPath.length > 1) {
-                    // File is in sub-folder
-                    const subfolderName = remainingPath[0];
-                    if (!folders.has(subfolderName)) {
-                        folders.set(subfolderName, { name: subfolderName, count: 0, files: [] });
+            try {
+                // Check permission
+                const perm = await dirHandle.queryPermission({ mode: 'read' });
+                if (perm !== 'granted') {
+                    const req = await dirHandle.requestPermission({ mode: 'read' });
+                    if (req !== 'granted') {
+                        photoGrid.innerHTML = `
+                            <div class="empty">
+                                <div class="empty-icon">🔒</div>
+                                <div class="empty-title">Permission denied</div>
+                                <div class="empty-sub">Folder access ke liye Allow karo</div>
+                            </div>
+                        `;
+                        return;
                     }
-                    folders.get(subfolderName).count++;
                 }
-            });
 
-            // Build items list
-            const items = [];
+                // Collect entries
+                const entries = [];
+                for await (const entry of dirHandle.values()) {
+                    entries.push(entry);
+                }
 
-            // Add folders first
-            folders.forEach((folder, name) => {
-                items.push({
-                    type: 'folder',
-                    name: name,
-                    count: folder.count,
-                    path: [...currentPath, name]
+                // Sort — folders first, then by name
+                entries.sort((a, b) => {
+                    if (a.kind === 'directory' && b.kind !== 'directory') return -1;
+                    if (a.kind !== 'directory' && b.kind === 'directory') return 1;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
                 });
-            });
 
-            // Add files
-            files.forEach(f => {
-                items.push({
-                    type: 'file',
-                    ...f
-                });
-            });
+                currentEntries = entries;
 
-            currentItems = items;
+                // Update header
+                updateHeader(dirHandle.name);
 
-            // Render
-            renderHeader();
-            renderItems();
+                // Render
+                renderEntries();
+
+            } catch (err) {
+                console.error('Load error:', err);
+                photoGrid.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">Error loading folder</div>
+                        <div class="empty-sub">${err.message}</div>
+                    </div>
+                `;
+            }
         }
 
         /* ============================================================
-           RENDER HEADER
+           HEADER UPDATE
            ============================================================ */
-        function renderHeader() {
-            const rootName = rootFiles[0]?.rootFolder || 'Folder';
-            const fullPath = [rootName, ...currentPath];
-
-            // Folder name
+        function updateHeader(name) {
             const displayName = currentPath.length > 0
                 ? currentPath[currentPath.length - 1]
-                : rootName;
+                : (rootHandle?.name || 'Gallery');
 
-            currentFolderName.textContent = '📁 ' + displayName;
+            folderName.textContent = '📁 ' + displayName;
 
             // Stats
-            const folderCount = currentItems.filter(i => i.type === 'folder').length;
-            const fileCount = currentItems.filter(i => i.type === 'file').length;
+            const folders = currentEntries.filter(e => e.kind === 'directory').length;
+            const files = currentEntries.filter(e => e.kind === 'file').length;
+            const photos = currentEntries.filter(e =>
+                e.kind === 'file' && /\.(jpg|jpeg|png|gif|webp|heic|bmp|svg)$/i.test(e.name)
+            ).length;
+
             const parts = [];
-            if (folderCount) parts.push(`${folderCount} folders`);
-            if (fileCount) parts.push(`${fileCount} files`);
-            currentStats.textContent = parts.join(' • ') || 'Empty';
+            if (folders) parts.push(`${folders} folders`);
+            if (photos) parts.push(`${photos} photos`);
+            if (files - photos > 0) parts.push(`${files - photos} files`);
+            folderStats.textContent = parts.join(' • ') || 'Empty';
 
             // Breadcrumb
-            breadcrumb.innerHTML = '';
-            fullPath.forEach((part, index) => {
-                if (index > 0) {
-                    const sep = document.createElement('span');
-                    sep.className = 'breadcrumb-sep';
-                    sep.textContent = '›';
-                    breadcrumb.appendChild(sep);
-                }
-
-                const btn = document.createElement('button');
-                btn.className = 'breadcrumb-item';
-                if (index === fullPath.length - 1) btn.classList.add('current');
-                btn.textContent = index === 0 ? '🏠 ' + part : part;
-
-                // Click handler
-                const targetPath = fullPath.slice(1, index + 1);  // remove root
-                btn.addEventListener('click', () => navigateTo(targetPath));
-
-                breadcrumb.appendChild(btn);
-            });
+            renderBreadcrumb();
 
             // Back button
             if (currentPath.length > 0) {
-                backBtn.style.display = 'block';
-                backBtn.onclick = () => {
-                    const parentPath = currentPath.slice(0, -1);
-                    navigateTo(parentPath);
-                };
+                backBtn.style.display = 'flex';
+                backBtn.onclick = () => navigateUp();
             } else {
                 backBtn.style.display = 'none';
             }
         }
 
+        function renderBreadcrumb() {
+            breadcrumb.innerHTML = '';
+
+            // Root
+            const rootName = rootHandle?.name || 'Gallery';
+            const rootBtn = document.createElement('button');
+            rootBtn.className = 'bc-item' + (currentPath.length === 0 ? ' current' : '');
+            rootBtn.textContent = '🏠 ' + rootName;
+            rootBtn.onclick = () => navigateToPath([]);
+            breadcrumb.appendChild(rootBtn);
+
+            // Path items
+            currentPath.forEach((part, index) => {
+                const sep = document.createElement('span');
+                sep.className = 'bc-sep';
+                sep.textContent = '›';
+                breadcrumb.appendChild(sep);
+
+                const btn = document.createElement('button');
+                btn.className = 'bc-item' + (index === currentPath.length - 1 ? ' current' : '');
+                btn.textContent = part;
+                btn.onclick = () => navigateToPath(currentPath.slice(0, index + 1));
+                breadcrumb.appendChild(btn);
+            });
+
+            // Scroll to end
+            breadcrumb.scrollLeft = breadcrumb.scrollWidth;
+        }
+
         /* ============================================================
-           RENDER ITEMS
+           NAVIGATION
            ============================================================ */
-        function renderItems() {
-            // Apply search filter
-            let items = currentItems;
+        async function navigateToPath(pathArray) {
+            if (!rootHandle) return;
+
+            // Get handle at that path
+            let handle = rootHandle;
+            for (const part of pathArray) {
+                try {
+                    handle = await handle.getDirectoryHandle(part);
+                } catch (err) {
+                    showToast('❌ Folder not found');
+                    return;
+                }
+            }
+
+            searchQuery = '';
+            searchInput.value = '';
+            await loadFolder(handle, pathArray);
+        }
+
+        async function navigateUp() {
+            if (currentPath.length === 0) return;
+            const parentPath = currentPath.slice(0, -1);
+            await navigateToPath(parentPath);
+        }
+
+        async function navigateInto(folderName) {
+            const newPath = [...currentPath, folderName];
+            await navigateToPath(newPath);
+        }
+
+        /* ============================================================
+           RENDER ENTRIES
+           ============================================================ */
+        function renderEntries() {
+            // Apply search
+            let items = currentEntries;
             if (searchQuery) {
-                items = items.filter(i => i.name.toLowerCase().includes(searchQuery));
+                items = items.filter(e => e.name.toLowerCase().includes(searchQuery));
             }
 
             if (items.length === 0) {
-                fileContainer.innerHTML = `
+                photoGrid.innerHTML = `
                     <div class="empty">
                         <div class="empty-icon">${searchQuery ? '🔍' : '📭'}</div>
                         <div class="empty-title">${searchQuery ? 'Koi result nahi' : 'Folder khaali hai'}</div>
@@ -773,75 +943,88 @@
                 return;
             }
 
-            fileContainer.innerHTML = '';
+            photoGrid.innerHTML = '';
 
-            items.forEach((item, index) => {
+            // Render each entry
+            items.forEach((entry, index) => {
                 const div = document.createElement('div');
-                div.className = 'list-item';
-                div.style.animationDelay = `${Math.min(index * 0.02, 0.3)}s`;
+                div.className = 'photo-item';
+                div.style.animationDelay = `${Math.min(index * 0.01, 0.3)}s`;
 
-                // Thumb
-                const thumb = document.createElement('div');
-                thumb.className = 'list-thumb';
-
-                if (item.type === 'folder') {
-                    thumb.classList.add('folder');
-                    thumb.textContent = '📁';
-                } else if (item.category === 'image') {
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = function() { URL.revokeObjectURL(this.src); };
-                    thumb.appendChild(img);
-                } else {
-                    thumb.textContent = getFileIcon(item.category, item.ext);
-                }
-
-                // Info
-                const info = document.createElement('div');
-                info.className = 'list-info';
-
-                if (item.type === 'folder') {
-                    info.innerHTML = `
-                        <div class="list-name">${escapeHtml(item.name)}</div>
-                        <div class="list-meta">
-                            <span class="item-count">${item.count} items</span>
-                        </div>
+                if (entry.kind === 'directory') {
+                    // Folder
+                    div.innerHTML = `
+                        <div class="folder-icon">📁</div>
+                        <div class="folder-name">${escapeHtml(entry.name)}</div>
                     `;
+                    div.addEventListener('click', () => navigateInto(entry.name));
                 } else {
-                    info.innerHTML = `
-                        <div class="list-name">${escapeHtml(item.name)}</div>
-                        <div class="list-meta">
-                            <span>${formatBytes(item.size)}</span>
-                            <span class="dot">•</span>
-                            <span>${formatDate(item.lastModified)}</span>
-                        </div>
-                    `;
-                }
+                    // File
+                    const isImage = /\.(jpg|jpeg|png|gif|webp|heic|bmp|svg)$/i.test(entry.name);
+                    const isVideo = /\.(mp4|mov|avi|mkv|webm|m4v|3gp)$/i.test(entry.name);
 
-                // Arrow (for folders)
-                let arrow = null;
-                if (item.type === 'folder') {
-                    arrow = document.createElement('div');
-                    arrow.className = 'list-arrow';
-                    arrow.textContent = '›';
-                }
-
-                div.appendChild(thumb);
-                div.appendChild(info);
-                if (arrow) div.appendChild(arrow);
-
-                // Click handler
-                div.addEventListener('click', () => {
-                    if (item.type === 'folder') {
-                        navigateTo(item.path);
+                    if (isImage) {
+                        // Lazy load image thumbnail
+                        loadImageThumbnail(entry, div);
                     } else {
-                        handleFileClick(item);
+                        // Show icon
+                        const ext = entry.name.split('.').pop().toLowerCase();
+                        div.innerHTML = `
+                            <div class="file-icon">${getFileIcon(ext, isVideo)}</div>
+                            <div class="item-badge">${ext}</div>
+                        `;
                     }
-                });
 
-                fileContainer.appendChild(div);
+                    div.addEventListener('click', () => handleFileClick(entry, isImage, isVideo));
+                }
+
+                photoGrid.appendChild(div);
             });
+        }
+
+        /* ============================================================
+           LOAD IMAGE THUMBNAIL
+           ============================================================ */
+        async function loadImageThumbnail(entry, container) {
+            // Placeholder
+            container.innerHTML = `
+                <div class="file-icon" style="background:#1c1c1e;">🖼️</div>
+            `;
+
+            try {
+                const file = await entry.getFile();
+                const url = URL.createObjectURL(file);
+
+                const img = document.createElement('img');
+                img.loading = 'lazy';
+                img.src = url;
+                img.onload = () => {
+                    // Replace placeholder
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                };
+
+                // Cache file for preview
+                itemCache.set(entry.name + '_' + Date.now(), file);
+
+            } catch (err) {
+                console.warn('Thumbnail error:', entry.name);
+            }
+        }
+
+        function getFileIcon(ext, isVideo) {
+            if (isVideo) return '🎬';
+            const icons = {
+                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
+                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
+                'mp3': '🎵', 'wav': '🎵', 'm4a': '🎵',
+                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+                'apk': '📱', 'html': '🌐', 'js': '⚡'
+            };
+            return icons[ext] || '📎';
         }
 
         function escapeHtml(str) {
@@ -851,23 +1034,38 @@
         }
 
         /* ============================================================
-           FILE CLICK — PREVIEW
+           FILE PREVIEW
            ============================================================ */
-        function handleFileClick(item) {
-            if (item.category === 'image') {
-                previewImg.src = URL.createObjectURL(item.file);
-                previewImg.style.display = 'block';
-                previewVideo.style.display = 'none';
-                previewVideo.src = '';
+        async function handleFileClick(entry, isImage, isVideo) {
+            if (!isImage && !isVideo) {
+                // Not previewable
+                try {
+                    const file = await entry.getFile();
+                    showToast(`📄 ${entry.name} • ${formatBytes(file.size)}`);
+                } catch (e) {}
+                return;
+            }
+
+            try {
+                const file = await entry.getFile();
+                const url = URL.createObjectURL(file);
+
+                if (isImage) {
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                    previewVideo.style.display = 'none';
+                    previewVideo.src = '';
+                } else {
+                    previewVideo.src = url;
+                    previewVideo.style.display = 'block';
+                    previewImg.style.display = 'none';
+                    previewImg.src = '';
+                }
+
                 previewModal.classList.add('show');
-            } else if (item.category === 'video') {
-                previewVideo.src = URL.createObjectURL(item.file);
-                previewVideo.style.display = 'block';
-                previewImg.style.display = 'none';
-                previewImg.src = '';
-                previewModal.classList.add('show');
-            } else {
-                showToast(`📄 ${item.name} • ${formatBytes(item.size)}`);
+
+            } catch (err) {
+                showToast('❌ Could not load file');
             }
         }
 
@@ -897,13 +1095,100 @@
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchQuery = searchInput.value.trim().toLowerCase();
-                renderItems();
+                renderEntries();
             }, 200);
         });
 
         /* ============================================================
-           TOAST
+           CHANGE FOLDER
            ============================================================ */
+        changeBtn.addEventListener('click', async () => {
+            await deleteHandle(HANDLE_KEY);
+            rootHandle = null;
+            currentPath = [];
+            currentEntries = [];
+            itemCache.clear();
+            welcomeScreen.style.display = 'flex';
+            galleryScreen.classList.remove('show');
+            reconnectBanner.classList.remove('show');
+        });
+
+        /* ============================================================
+           RECONNECT
+           ============================================================ */
+        reconnectBtn.addEventListener('click', async () => {
+            try {
+                const saved = await getHandle(HANDLE_KEY);
+                if (!saved) return;
+
+                const perm = await saved.requestPermission({ mode: 'read' });
+                if (perm === 'granted') {
+                    rootHandle = saved;
+                    reconnectBanner.classList.remove('show');
+                    await loadFolder(saved, []);
+                }
+            } catch (err) {
+                showToast('❌ Reconnect failed');
+            }
+        });
+
+        /* ============================================================
+           INIT — Auto-load saved folder
+           ============================================================ */
+        async function init() {
+            if (!isSupported) return;
+
+            try {
+                const saved = await getHandle(HANDLE_KEY);
+                if (!saved) return;
+
+                console.log('📁 Found saved folder:', saved.name);
+
+                const perm = await saved.queryPermission({ mode: 'read' });
+
+                if (perm === 'granted') {
+                    // ✅ Silent auto-load
+                    console.log('✅ Auto-loading gallery...');
+                    rootHandle = saved;
+                    welcomeScreen.style.display = 'none';
+                    galleryScreen.classList.add('show');
+                    await loadFolder(saved, []);
+
+                } else if (perm === 'prompt') {
+                    // ⚠️ Need permission — show reconnect
+                    console.log('⚠️ Permission needed');
+                    welcomeScreen.style.display = 'none';
+                    galleryScreen.classList.add('show');
+                    reconnectBanner.classList.add('show');
+                    photoGrid.innerHTML = `
+                        <div class="empty">
+                            <div class="empty-icon">🔒</div>
+                            <div class="empty-title">Reconnect karo</div>
+                            <div class="empty-sub">Permission expire ho gayi. Upar "Reconnect" button dabao.</div>
+                        </div>
+                    `;
+
+                } else {
+                    // ❌ Denied — delete handle
+                    await deleteHandle(HANDLE_KEY);
+                }
+
+            } catch (err) {
+                console.warn('Init error:', err);
+            }
+        }
+
+        /* ============================================================
+           HELPERS
+           ============================================================ */
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+        }
+
         function showToast(msg) {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
@@ -921,9 +1206,10 @@
         }
 
         /* ============================================================
-           INIT
+           START
            ============================================================ */
-        console.log('✅ Folder Explorer ready');
+        init();
+        console.log('✅ Gallery app ready');
     </script>
 </body>
 </html>
