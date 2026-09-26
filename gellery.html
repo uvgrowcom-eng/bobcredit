@@ -17,7 +17,6 @@
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-            padding-bottom: 40px;
         }
 
         /* ===== HEADER ===== */
@@ -26,39 +25,90 @@
             top: 0;
             background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
-            padding: 16px;
             z-index: 100;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 16px;
         }
 
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .breadcrumb::-webkit-scrollbar { display: none; }
+
+        .breadcrumb-item {
+            color: #8e8e93;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: transparent;
+            border: none;
+            font-size: 12px;
+        }
+
+        .breadcrumb-item:hover {
+            background: #1c1c1e;
+            color: #fff;
+        }
+
+        .breadcrumb-item.current {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .breadcrumb-sep {
+            color: #5f6368;
+            font-size: 10px;
+        }
+
+        /* Header top */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            gap: 12px;
         }
 
-        .folder-info {
+        .current-folder {
             flex: 1;
             min-width: 0;
         }
 
-        .folder-info h1 {
+        .current-folder h1 {
             font-size: 18px;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .folder-info .sub {
-            font-size: 12px;
+        .current-folder .stats {
+            font-size: 11px;
             color: #8e8e93;
             margin-top: 2px;
         }
 
-        .change-btn {
-            padding: 8px 14px;
+        .header-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .header-btn {
+            padding: 8px 12px;
             border: none;
             border-radius: 10px;
             background: #1c1c1e;
@@ -70,196 +120,62 @@
             white-space: nowrap;
         }
 
+        .header-btn.primary {
+            background: linear-gradient(45deg, #f09433, #dc2743);
+        }
+
+        .header-btn:active { transform: scale(0.95); }
+
         /* Search */
         .search-wrap {
             position: relative;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px 12px 40px;
+            padding: 10px 14px 10px 38px;
             background: #1c1c1e;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             font-family: inherit;
             outline: none;
         }
 
-        .search-input:focus {
-            border-color: #1a73e8;
-        }
+        .search-input:focus { border-color: #1a73e8; }
 
         .search-icon {
             position: absolute;
-            left: 14px;
+            left: 13px;
             top: 50%;
             transform: translateY(-50%);
             color: #8e8e93;
-            font-size: 16px;
+            font-size: 14px;
             pointer-events: none;
         }
 
-        /* Filter chips */
-        .chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
+        /* ===== FILE LIST (Vertical) ===== */
+        .file-container {
+            padding: 8px 0;
         }
-
-        .chips::-webkit-scrollbar { display: none; }
-
-        .chip {
-            flex-shrink: 0;
-            padding: 7px 12px;
-            background: #1c1c1e;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            color: #8e8e93;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: inherit;
-        }
-
-        .chip.active {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-            border-color: transparent;
-            color: #fff;
-        }
-
-        .chip-count {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        /* ===== OPEN BUTTON ===== */
-        .open-wrap {
-            max-width: 500px;
-            margin: 40px auto;
-            padding: 0 16px;
-        }
-
-        .open-btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            background-size: 300% 300%;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
-            animation: gradientMove 4s ease infinite;
-            font-family: inherit;
-        }
-
-        .open-btn:active { transform: scale(0.97); }
-
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* ===== FILE GRID ===== */
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            padding: 12px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .file-item {
-            aspect-ratio: 1;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-            background: #1c1c1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.15s;
-        }
-
-        .file-item:active { transform: scale(0.95); }
-
-        .file-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .file-icon-big {
-            font-size: 36px;
-            opacity: 0.9;
-        }
-
-        .file-badge {
-            position: absolute;
-            bottom: 6px;
-            left: 6px;
-            padding: 2px 6px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .file-badge.right {
-            left: auto;
-            right: 6px;
-        }
-
-        .file-badge.folder-badge {
-            background: linear-gradient(45deg, #f09433, #dc2743);
-        }
-
-        /* ===== LIST VIEW ===== */
-        .file-list {
-            padding: 0 12px;
-            max-width: 600px;
-            margin: 0 auto;
-            display: none;
-        }
-
-        .file-list.show { display: block; }
 
         .list-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 12px 16px;
             cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .list-item:active { background: #1c1c1e; }
+        .list-item:active {
+            background: #1c1c1e;
+        }
 
-        .list-icon {
+        .list-thumb {
             width: 48px;
             height: 48px;
             border-radius: 10px;
@@ -270,12 +186,18 @@
             justify-content: center;
             font-size: 24px;
             flex-shrink: 0;
+            position: relative;
         }
 
-        .list-icon img {
+        .list-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .list-thumb.folder {
+            background: linear-gradient(135deg, #f09433, #dc2743);
+            font-size: 24px;
         }
 
         .list-info {
@@ -286,6 +208,7 @@
         .list-name {
             font-size: 14px;
             font-weight: 500;
+            color: #fff;
             margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
@@ -298,20 +221,35 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .list-meta .dot { opacity: 0.5; }
 
+        .list-meta .item-count {
+            background: #1c1c1e;
+            padding: 1px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #8e8e93;
+        }
+
+        .list-arrow {
+            color: #5f6368;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
         /* ===== LOADING ===== */
         .loading {
-            grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
         }
 
         .spinner {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border: 4px solid rgba(26, 115, 232, 0.15);
             border-top-color: #1a73e8;
             border-radius: 50%;
@@ -326,15 +264,8 @@
             font-size: 14px;
         }
 
-        .loading-progress {
-            margin-top: 12px;
-            font-size: 12px;
-            color: #5f6368;
-        }
-
         /* ===== EMPTY ===== */
         .empty {
-            grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
         }
@@ -359,29 +290,65 @@
             margin: 0 auto;
         }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c2c2e;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            z-index: 9999;
-            animation: toastIn 0.3s;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            white-space: nowrap;
-            max-width: 90vw;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* ===== OPEN SCREEN ===== */
+        .open-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
         }
 
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .open-screen-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .open-screen h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .open-screen p {
+            font-size: 14px;
+            color: #8e8e93;
+            line-height: 1.6;
+            max-width: 320px;
+            margin-bottom: 30px;
+        }
+
+        .open-btn {
+            padding: 18px 40px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 4s ease infinite;
+            font-family: inherit;
+        }
+
+        .open-btn:active { transform: scale(0.97); }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         /* ===== PREVIEW MODAL ===== */
@@ -404,7 +371,8 @@
             position: relative;
         }
 
-        .preview-content img {
+        .preview-content img,
+        .preview-content video {
             max-width: 100%;
             max-height: 85vh;
             border-radius: 12px;
@@ -413,7 +381,7 @@
 
         .preview-close {
             position: absolute;
-            top: -40px;
+            top: -44px;
             right: 0;
             width: 36px;
             height: 36px;
@@ -426,7 +394,31 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Hidden input */
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2e;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            animation: toastIn 0.3s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            max-width: 90vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
         .hidden-input {
             position: absolute;
             left: -9999px;
@@ -437,56 +429,56 @@
 </head>
 <body>
 
-    <!-- HEADER -->
-    <div class="header" id="header" style="display:none;">
-        <div class="header-top">
-            <div class="folder-info">
-                <h1 id="folderName">📁 Folder</h1>
-                <div class="sub" id="folderStats">Loading...</div>
-            </div>
-            <button class="change-btn" id="changeBtn">Change</button>
-        </div>
-
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
-        </div>
-
-        <div class="chips" id="chips">
-            <button class="chip active" data-filter="all">All <span class="chip-count" id="cntAll">0</span></button>
-            <button class="chip" data-filter="image">🖼️ Photos <span class="chip-count" id="cntImg">0</span></button>
-            <button class="chip" data-filter="video">🎬 Videos <span class="chip-count" id="cntVid">0</span></button>
-            <button class="chip" data-filter="audio">🎵 Audio <span class="chip-count" id="cntAud">0</span></button>
-            <button class="chip" data-filter="document">📄 Docs <span class="chip-count" id="cntDoc">0</span></button>
-            <button class="chip" data-filter="other">📎 Other <span class="chip-count" id="cntOth">0</span></button>
-        </div>
-    </div>
-
-    <!-- OPEN BUTTON -->
-    <div class="open-wrap" id="openWrap">
+    <!-- OPEN SCREEN -->
+    <div class="open-screen" id="openScreen">
+        <div class="open-screen-icon">📁</div>
+        <h1>Folder Explorer</h1>
+        <p>Apna folder select karo — photos, videos, documents, sab kuch dikhega</p>
         <input type="file" id="folderInput" webkitdirectory multiple class="hidden-input">
         <button class="open-btn" id="openBtn">
             📁 Select Folder
         </button>
     </div>
 
-    <!-- FILE GRID -->
-    <div class="file-grid" id="fileGrid">
-        <div class="empty">
-            <div class="empty-icon">📁</div>
-            <div class="empty-title">Folder select karo</div>
-            <div class="empty-sub">Saari files — photos, videos, documents — ek saath dikhengi</div>
+    <!-- EXPLORER SCREEN -->
+    <div id="explorerScreen" style="display:none;">
+        <div class="header">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb" id="breadcrumb"></div>
+
+            <div class="header-top">
+                <div class="current-folder">
+                    <h1 id="currentFolderName">📁 Folder</h1>
+                    <div class="stats" id="currentStats">0 items</div>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="backBtn" style="display:none;">← Back</button>
+                    <button class="header-btn primary" id="changeBtn">Change</button>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search in this folder...">
+            </div>
+        </div>
+
+        <!-- File Container -->
+        <div class="file-container" id="fileContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
         </div>
     </div>
-
-    <!-- FILE LIST -->
-    <div class="file-list" id="fileList"></div>
 
     <!-- PREVIEW MODAL -->
     <div id="previewModal">
         <div class="preview-content">
             <button class="preview-close" id="previewClose">✕</button>
-            <img id="previewImg" src="" alt="Preview">
+            <img id="previewImg" src="" alt="Preview" style="display:none;">
+            <video id="previewVideo" controls style="display:none;"></video>
         </div>
     </div>
 
@@ -494,9 +486,9 @@
         /* ============================================================
            STATE
            ============================================================ */
-        let allFiles = [];       // All files from folder
-        let filteredFiles = [];  // After filter + search
-        let currentFilter = 'all';
+        let rootFiles = [];           // All files from initial folder
+        let currentPath = [];         // ['Pictures', 'Camera']
+        let currentItems = [];        // Items in current view
         let searchQuery = '';
 
         /* ============================================================
@@ -521,12 +513,10 @@
             const extIcons = {
                 'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
                 'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
-                'csv': '📊', 'md': '📝', 'rtf': '📄', 'odt': '📄',
-                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️', 'tar': '🗜️', 'gz': '🗜️',
-                'apk': '📱', 'exe': '⚙️', 'dmg': '💿', 'iso': '💿',
-                'html': '🌐', 'css': '🎨', 'js': '⚡', 'json': '📋',
-                'xml': '📋', 'py': '🐍', 'java': '☕', 'cpp': '⚙️',
-                'ttf': '🔤', 'otf': '🔤', 'woff': '🔤'
+                'csv': '📊', 'md': '📝',
+                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+                'apk': '📱', 'exe': '⚙️',
+                'html': '🌐', 'css': '🎨', 'js': '⚡', 'json': '📋'
             };
             const catIcons = {
                 video: '🎬', audio: '🎵', document: '📄', other: '📎', image: '🖼️'
@@ -556,25 +546,27 @@
         /* ============================================================
            DOM REFS
            ============================================================ */
-        const header = document.getElementById('header');
-        const folderName = document.getElementById('folderName');
-        const folderStats = document.getElementById('folderStats');
-        const changeBtn = document.getElementById('changeBtn');
-        const openWrap = document.getElementById('openWrap');
+        const openScreen = document.getElementById('openScreen');
+        const explorerScreen = document.getElementById('explorerScreen');
         const openBtn = document.getElementById('openBtn');
         const folderInput = document.getElementById('folderInput');
-        const fileGrid = document.getElementById('fileGrid');
-        const fileList = document.getElementById('fileList');
+        const changeBtn = document.getElementById('changeBtn');
+        const backBtn = document.getElementById('backBtn');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const currentFolderName = document.getElementById('currentFolderName');
+        const currentStats = document.getElementById('currentStats');
         const searchInput = document.getElementById('searchInput');
-        const chips = document.getElementById('chips');
+        const fileContainer = document.getElementById('fileContainer');
         const previewModal = document.getElementById('previewModal');
         const previewImg = document.getElementById('previewImg');
+        const previewVideo = document.getElementById('previewVideo');
         const previewClose = document.getElementById('previewClose');
 
         /* ============================================================
            OPEN FOLDER
            ============================================================ */
         openBtn.addEventListener('click', () => folderInput.click());
+
         changeBtn.addEventListener('click', () => {
             folderInput.value = '';
             folderInput.click();
@@ -584,196 +576,272 @@
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            // Get folder name
-            const firstPath = files[0].webkitRelativePath || '';
-            const folder = firstPath.split('/')[0] || 'Folder';
+            // Reset
+            rootFiles = [];
+            currentPath = [];
+            searchQuery = '';
+            searchInput.value = '';
 
             // Show loading
-            folderName.textContent = '📁 ' + folder;
-            folderStats.textContent = 'Loading...';
-            header.style.display = 'block';
-            openWrap.style.display = 'none';
-
-            fileGrid.innerHTML = `
+            openScreen.style.display = 'none';
+            explorerScreen.style.display = 'block';
+            fileContainer.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div class="loading-text">Processing files...</div>
-                    <div class="loading-progress" id="loadProgress">0 / ${files.length}</div>
+                    <div class="loading-text">Processing ${files.length} files...</div>
                 </div>
             `;
 
-            // Process files
-            allFiles = [];
-
+            // Process files — build tree structure
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const category = getFileCategory(file.name);
-                const ext = file.name.split('.').pop().toLowerCase();
+                const relativePath = file.webkitRelativePath || '';
+                const parts = relativePath.split('/').filter(Boolean);
 
-                allFiles.push({
+                // First part = root folder name
+                const rootFolderName = parts[0];
+                // Rest = path within
+                const innerPath = parts.slice(1);
+
+                rootFiles.push({
                     file,
                     name: file.name,
+                    pathParts: innerPath,           // ['Camera', 'photo1.jpg']
+                    rootFolder: rootFolderName,
                     size: file.size,
                     type: file.type,
-                    category,
-                    ext,
+                    category: getFileCategory(file.name),
+                    ext: file.name.split('.').pop().toLowerCase(),
                     lastModified: file.lastModified,
-                    path: file.webkitRelativePath,
-                    url: null  // lazy
+                    isFile: true
                 });
 
-                // Update progress every 50 files
-                if (i % 50 === 0) {
-                    const progress = document.getElementById('loadProgress');
-                    if (progress) progress.textContent = `${i} / ${files.length}`;
-                    await new Promise(r => setTimeout(r, 0));
-                }
+                // Yield every 100
+                if (i % 100 === 0) await new Promise(r => setTimeout(r, 0));
             }
 
-            console.log(`✅ Loaded ${allFiles.length} files`);
+            console.log(`✅ Loaded ${rootFiles.length} files`);
+            console.log(`📁 Root folder: ${rootFiles[0]?.rootFolder}`);
 
-            // Update counts
-            updateCounts();
-
-            // Render
-            applyFilters();
+            // Navigate to root
+            navigateTo([]);
         });
 
         /* ============================================================
-           COUNTS
+           NAVIGATE
            ============================================================ */
-        function updateCounts() {
-            const counts = { all: allFiles.length, image: 0, video: 0, audio: 0, document: 0, other: 0 };
-            allFiles.forEach(f => {
-                if (counts[f.category] !== undefined) counts[f.category]++;
+        function navigateTo(pathArray) {
+            currentPath = pathArray;
+            searchQuery = '';
+            searchInput.value = '';
+            renderCurrentFolder();
+        }
+
+        function renderCurrentFolder() {
+            // Filter files matching current path
+            const matchingFiles = rootFiles.filter(f => {
+                // Check if file's path starts with currentPath
+                if (f.pathParts.length < currentPath.length + 1) return false;
+                for (let i = 0; i < currentPath.length; i++) {
+                    if (f.pathParts[i] !== currentPath[i]) return false;
+                }
+                return true;
             });
-            document.getElementById('cntAll').textContent = counts.all;
-            document.getElementById('cntImg').textContent = counts.image;
-            document.getElementById('cntVid').textContent = counts.video;
-            document.getElementById('cntAud').textContent = counts.audio;
-            document.getElementById('cntDoc').textContent = counts.document;
-            document.getElementById('cntOth').textContent = counts.other;
 
-            // Header stats
+            // Group by next segment
+            const folders = new Map();  // name -> { files: [], subfolders: Set }
+            const files = [];
+
+            matchingFiles.forEach(f => {
+                const remainingPath = f.pathParts.slice(currentPath.length);
+
+                if (remainingPath.length === 1) {
+                    // File is directly in current folder
+                    files.push(f);
+                } else if (remainingPath.length > 1) {
+                    // File is in sub-folder
+                    const subfolderName = remainingPath[0];
+                    if (!folders.has(subfolderName)) {
+                        folders.set(subfolderName, { name: subfolderName, count: 0, files: [] });
+                    }
+                    folders.get(subfolderName).count++;
+                }
+            });
+
+            // Build items list
+            const items = [];
+
+            // Add folders first
+            folders.forEach((folder, name) => {
+                items.push({
+                    type: 'folder',
+                    name: name,
+                    count: folder.count,
+                    path: [...currentPath, name]
+                });
+            });
+
+            // Add files
+            files.forEach(f => {
+                items.push({
+                    type: 'file',
+                    ...f
+                });
+            });
+
+            currentItems = items;
+
+            // Render
+            renderHeader();
+            renderItems();
+        }
+
+        /* ============================================================
+           RENDER HEADER
+           ============================================================ */
+        function renderHeader() {
+            const rootName = rootFiles[0]?.rootFolder || 'Folder';
+            const fullPath = [rootName, ...currentPath];
+
+            // Folder name
+            const displayName = currentPath.length > 0
+                ? currentPath[currentPath.length - 1]
+                : rootName;
+
+            currentFolderName.textContent = '📁 ' + displayName;
+
+            // Stats
+            const folderCount = currentItems.filter(i => i.type === 'folder').length;
+            const fileCount = currentItems.filter(i => i.type === 'file').length;
             const parts = [];
-            if (counts.image) parts.push(`${counts.image} photos`);
-            if (counts.video) parts.push(`${counts.video} videos`);
-            if (counts.document) parts.push(`${counts.document} docs`);
-            if (counts.audio) parts.push(`${counts.audio} audio`);
-            if (counts.other) parts.push(`${counts.other} other`);
-            folderStats.textContent = parts.join(' • ') || `${counts.all} files`;
+            if (folderCount) parts.push(`${folderCount} folders`);
+            if (fileCount) parts.push(`${fileCount} files`);
+            currentStats.textContent = parts.join(' • ') || 'Empty';
+
+            // Breadcrumb
+            breadcrumb.innerHTML = '';
+            fullPath.forEach((part, index) => {
+                if (index > 0) {
+                    const sep = document.createElement('span');
+                    sep.className = 'breadcrumb-sep';
+                    sep.textContent = '›';
+                    breadcrumb.appendChild(sep);
+                }
+
+                const btn = document.createElement('button');
+                btn.className = 'breadcrumb-item';
+                if (index === fullPath.length - 1) btn.classList.add('current');
+                btn.textContent = index === 0 ? '🏠 ' + part : part;
+
+                // Click handler
+                const targetPath = fullPath.slice(1, index + 1);  // remove root
+                btn.addEventListener('click', () => navigateTo(targetPath));
+
+                breadcrumb.appendChild(btn);
+            });
+
+            // Back button
+            if (currentPath.length > 0) {
+                backBtn.style.display = 'block';
+                backBtn.onclick = () => {
+                    const parentPath = currentPath.slice(0, -1);
+                    navigateTo(parentPath);
+                };
+            } else {
+                backBtn.style.display = 'none';
+            }
         }
 
         /* ============================================================
-           FILTER + SEARCH
+           RENDER ITEMS
            ============================================================ */
-        function applyFilters() {
-            let result = allFiles;
-
-            if (currentFilter !== 'all') {
-                result = result.filter(f => f.category === currentFilter);
-            }
-
+        function renderItems() {
+            // Apply search filter
+            let items = currentItems;
             if (searchQuery) {
-                result = result.filter(f => f.name.toLowerCase().includes(searchQuery));
+                items = items.filter(i => i.name.toLowerCase().includes(searchQuery));
             }
 
-            filteredFiles = result;
-            renderFiles();
-        }
-
-        /* ============================================================
-           RENDER
-           ============================================================ */
-        function renderFiles() {
-            if (filteredFiles.length === 0) {
-                fileGrid.innerHTML = `
+            if (items.length === 0) {
+                fileContainer.innerHTML = `
                     <div class="empty">
-                        <div class="empty-icon">📭</div>
-                        <div class="empty-title">Koi file nahi mili</div>
-                        <div class="empty-sub">Try different filter ya search</div>
+                        <div class="empty-icon">${searchQuery ? '🔍' : '📭'}</div>
+                        <div class="empty-title">${searchQuery ? 'Koi result nahi' : 'Folder khaali hai'}</div>
+                        <div class="empty-sub">${searchQuery ? 'Try different search' : 'Is folder mein kuch nahi hai'}</div>
                     </div>
                 `;
-                fileList.innerHTML = '';
                 return;
             }
 
-            fileGrid.innerHTML = '';
-            fileList.innerHTML = '';
+            fileContainer.innerHTML = '';
 
-            // Limit for performance — first 500
-            const limit = 500;
-            const toRender = filteredFiles.slice(0, limit);
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.animationDelay = `${Math.min(index * 0.02, 0.3)}s`;
 
-            toRender.forEach((item, index) => {
-                // Grid item
-                const gridDiv = document.createElement('div');
-                gridDiv.className = 'file-item';
-                gridDiv.style.animationDelay = `${Math.min(index * 0.005, 0.3)}s`;
+                // Thumb
+                const thumb = document.createElement('div');
+                thumb.className = 'list-thumb';
 
-                if (item.category === 'image') {
+                if (item.type === 'folder') {
+                    thumb.classList.add('folder');
+                    thumb.textContent = '📁';
+                } else if (item.category === 'image') {
                     const img = document.createElement('img');
                     img.loading = 'lazy';
                     img.src = URL.createObjectURL(item.file);
                     img.onload = function() { URL.revokeObjectURL(this.src); };
-                    gridDiv.appendChild(img);
+                    thumb.appendChild(img);
                 } else {
-                    const icon = document.createElement('div');
-                    icon.className = 'file-icon-big';
-                    icon.textContent = getFileIcon(item.category, item.ext);
-                    gridDiv.appendChild(icon);
+                    thumb.textContent = getFileIcon(item.category, item.ext);
                 }
 
-                const badge = document.createElement('div');
-                badge.className = 'file-badge';
-                badge.textContent = item.ext;
-                gridDiv.appendChild(badge);
+                // Info
+                const info = document.createElement('div');
+                info.className = 'list-info';
 
-                gridDiv.addEventListener('click', () => handleFileClick(item));
-                fileGrid.appendChild(gridDiv);
-            });
-
-            // List items
-            toRender.forEach((item) => {
-                const listDiv = document.createElement('div');
-                listDiv.className = 'list-item';
-
-                const iconDiv = document.createElement('div');
-                iconDiv.className = 'list-icon';
-                if (item.category === 'image') {
-                    const img = document.createElement('img');
-                    img.loading = 'lazy';
-                    img.src = URL.createObjectURL(item.file);
-                    img.onload = function() { URL.revokeObjectURL(this.src); };
-                    iconDiv.appendChild(img);
+                if (item.type === 'folder') {
+                    info.innerHTML = `
+                        <div class="list-name">${escapeHtml(item.name)}</div>
+                        <div class="list-meta">
+                            <span class="item-count">${item.count} items</span>
+                        </div>
+                    `;
                 } else {
-                    iconDiv.textContent = getFileIcon(item.category, item.ext);
+                    info.innerHTML = `
+                        <div class="list-name">${escapeHtml(item.name)}</div>
+                        <div class="list-meta">
+                            <span>${formatBytes(item.size)}</span>
+                            <span class="dot">•</span>
+                            <span>${formatDate(item.lastModified)}</span>
+                        </div>
+                    `;
                 }
 
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'list-info';
-                infoDiv.innerHTML = `
-                    <div class="list-name">${escapeHtml(item.name)}</div>
-                    <div class="list-meta">
-                        <span>${formatBytes(item.size)}</span>
-                        <span class="dot">•</span>
-                        <span>${formatDate(item.lastModified)}</span>
-                    </div>
-                `;
+                // Arrow (for folders)
+                let arrow = null;
+                if (item.type === 'folder') {
+                    arrow = document.createElement('div');
+                    arrow.className = 'list-arrow';
+                    arrow.textContent = '›';
+                }
 
-                listDiv.appendChild(iconDiv);
-                listDiv.appendChild(infoDiv);
-                listDiv.addEventListener('click', () => handleFileClick(item));
-                fileList.appendChild(listDiv);
+                div.appendChild(thumb);
+                div.appendChild(info);
+                if (arrow) div.appendChild(arrow);
+
+                // Click handler
+                div.addEventListener('click', () => {
+                    if (item.type === 'folder') {
+                        navigateTo(item.path);
+                    } else {
+                        handleFileClick(item);
+                    }
+                });
+
+                fileContainer.appendChild(div);
             });
-
-            // Show limit warning
-            if (filteredFiles.length > limit) {
-                const warn = document.createElement('div');
-                warn.style.cssText = 'grid-column:1/-1;text-align:center;padding:20px;color:#8e8e93;font-size:12px;';
-                warn.textContent = `Showing first ${limit} of ${filteredFiles.length} files`;
-                fileGrid.appendChild(warn);
-            }
         }
 
         function escapeHtml(str) {
@@ -783,44 +851,43 @@
         }
 
         /* ============================================================
-           FILE CLICK
+           FILE CLICK — PREVIEW
            ============================================================ */
         function handleFileClick(item) {
             if (item.category === 'image') {
-                // Show preview
-                const url = URL.createObjectURL(item.file);
-                previewImg.src = url;
+                previewImg.src = URL.createObjectURL(item.file);
+                previewImg.style.display = 'block';
+                previewVideo.style.display = 'none';
+                previewVideo.src = '';
+                previewModal.classList.add('show');
+            } else if (item.category === 'video') {
+                previewVideo.src = URL.createObjectURL(item.file);
+                previewVideo.style.display = 'block';
+                previewImg.style.display = 'none';
+                previewImg.src = '';
                 previewModal.classList.add('show');
             } else {
                 showToast(`📄 ${item.name} • ${formatBytes(item.size)}`);
             }
         }
 
-        previewClose.addEventListener('click', () => {
-            previewModal.classList.remove('show');
-            previewImg.src = '';
+        previewClose.addEventListener('click', closePreview);
+        previewModal.addEventListener('click', (e) => {
+            if (e.target === previewModal) closePreview();
         });
 
-        previewModal.addEventListener('click', (e) => {
-            if (e.target === previewModal) {
-                previewModal.classList.remove('show');
+        function closePreview() {
+            previewModal.classList.remove('show');
+            if (previewImg.src) {
+                URL.revokeObjectURL(previewImg.src);
                 previewImg.src = '';
             }
-        });
-
-        /* ============================================================
-           FILTER CHIPS
-           ============================================================ */
-        chips.addEventListener('click', (e) => {
-            const chip = e.target.closest('.chip');
-            if (!chip) return;
-
-            chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-
-            currentFilter = chip.dataset.filter;
-            applyFilters();
-        });
+            if (previewVideo.src) {
+                URL.revokeObjectURL(previewVideo.src);
+                previewVideo.src = '';
+                previewVideo.pause();
+            }
+        }
 
         /* ============================================================
            SEARCH
@@ -830,7 +897,7 @@
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchQuery = searchInput.value.trim().toLowerCase();
-                applyFilters();
+                renderItems();
             }, 200);
         });
 
