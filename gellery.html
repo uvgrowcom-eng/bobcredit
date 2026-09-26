@@ -2,64 +2,224 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gallery Folder Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>File Browser</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background: #0a0a0a; color: #fff; padding: 20px; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        .header { text-align: center; margin-bottom: 24px; }
-        .header h1 { font-size: 22px; margin-bottom: 8px; }
-        .header p { font-size: 13px; color: #8e8e93; }
-
-        .btn-row { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
-
-        .gallery-btn {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+        body {
+            background: #0a0a0a;
             color: #fff;
-            font-size: 15px;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 16px;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .folder-name {
+            font-size: 12px;
+            color: #8e8e93;
+            font-weight: 400;
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: #1c1c1e;
+            border-radius: 10px;
+            padding: 3px;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #8e8e93;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #2c2c2e;
+            color: #fff;
+        }
+
+        /* Search bar */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            background: #1c1c1e;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8e8e93;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /* Filter chips */
+        .filter-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .filter-chips::-webkit-scrollbar { display: none; }
+
+        .chip {
+            flex-shrink: 0;
+            padding: 8px 14px;
+            background: #1c1c1e;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            color: #8e8e93;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chip.active {
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .chip .chip-count {
+            background: rgba(0,0,0,0.3);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Sort dropdown */
+        .sort-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .file-count {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .sort-select {
+            background: #1c1c1e;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ===== MAIN BUTTON ===== */
+        .open-btn-wrap {
+            padding: 20px 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .open-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-        }
-        .gallery-btn:active { transform: scale(0.97); }
-        .gallery-btn:disabled { opacity: 0.5; }
-
-        .gallery-btn.secondary {
-            background: #2c2c2e;
-            box-shadow: none;
-            font-size: 14px;
-            flex: 0 0 auto;
-            padding: 16px 20px;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4);
+            animation: gradientMove 4s ease infinite;
+            transition: transform 0.15s;
         }
 
-        .status {
-            text-align: center;
-            font-size: 13px;
-            color: #8e8e93;
-            margin-bottom: 20px;
-            min-height: 20px;
+        .open-btn:active { transform: scale(0.97); }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
 
+        /* ===== GRID VIEW ===== */
         .file-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            max-width: 500px;
+            gap: 3px;
+            padding: 0 12px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
         .file-item {
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             cursor: pointer;
             position: relative;
@@ -67,425 +227,746 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.15s;
         }
-        .file-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .file-item .file-icon { font-size: 32px; opacity: 0.6; }
-        .file-item .file-name {
+
+        .file-item:active { transform: scale(0.95); }
+
+        .file-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .file-item .file-icon {
+            font-size: 32px;
+            opacity: 0.7;
+        }
+
+        .file-item .file-ext {
             position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 6px 8px;
-            font-size: 10px;
+            bottom: 6px;
+            left: 6px;
+            padding: 2px 6px;
+            background: rgba(0,0,0,0.7);
             color: #fff;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .file-item .file-duration {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            padding: 2px 6px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .file-item .select-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            background: #dc2743;
+            color: #fff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid #fff;
+        }
+
+        .file-item.selected {
+            outline: 3px solid #dc2743;
+            outline-offset: -3px;
+        }
+
+        .file-item.selected .select-badge { display: flex; }
+
+        /* ===== LIST VIEW ===== */
+        .file-list {
+            padding: 0 12px;
+            max-width: 600px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .file-list.show { display: block; }
+        .file-grid.hide { display: none; }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .list-item:active { background: #1c1c1e; }
+
+        .list-item.selected {
+            background: rgba(220, 39, 67, 0.15);
+            border: 1px solid rgba(220, 39, 67, 0.4);
+        }
+
+        .list-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1c1c1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 24px;
+        }
+
+        .list-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .file-item.selected { outline: 3px solid #dc2743; outline-offset: -3px; }
 
-        .empty {
-            grid-column: 1 / -1;
+        .list-meta {
+            font-size: 12px;
+            color: #8e8e93;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .list-meta .dot { opacity: 0.5; }
+
+        /* ===== LOADING ===== */
+        .loading {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(220, 39, 67, 0.15);
+            border-top-color: #dc2743;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
             color: #8e8e93;
             font-size: 14px;
         }
-        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
 
-        .loading {
-            grid-column: 1 / -1;
+        /* ===== EMPTY ===== */
+        .empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 80px 20px;
         }
-        .spinner {
-            width: 40px; height: 40px;
-            border: 3px solid rgba(220, 39, 67, 0.2);
-            border-top-color: #dc2743;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 12px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .reconnect-banner {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            padding: 14px 16px;
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid rgba(255, 193, 7, 0.4);
-            border-radius: 12px;
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-sub {
             font-size: 13px;
-            color: #FFC107;
+            color: #8e8e93;
+        }
+
+        /* ===== BOTTOM BAR ===== */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
             display: none;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            z-index: 100;
         }
-        .reconnect-banner.show { display: flex; }
 
-        .reconnect-btn {
-            padding: 8px 16px;
+        .bottom-bar.show { display: flex; }
+
+        .selected-info {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .selected-info span {
+            color: #dc2743;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
-            background: #FFC107;
-            color: #1a1a1a;
-            font-size: 12px;
-            font-weight: 700;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #f09433, #dc2743);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
+            font-family: inherit;
+        }
+
+        .action-btn.secondary {
+            background: #2c2c2e;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2e;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            animation: toastIn 0.3s;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
 
+    <!-- HEADER -->
     <div class="header">
-        <h1>📁 Folder Browser</h1>
-        <p>Ek baar select karo — baar baar nahi poochega</p>
+        <div class="header-top">
+            <div>
+                <h1>📁 Files</h1>
+                <div class="folder-name" id="folderName">Koi folder select nahi kiya</div>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" id="gridViewBtn" title="Grid">▦</button>
+                <button class="view-btn" id="listViewBtn" title="List">☰</button>
+            </div>
+        </div>
+
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
+        </div>
+
+        <div class="filter-chips" id="filterChips">
+            <div class="chip active" data-filter="all">
+                All <span class="chip-count" id="countAll">0</span>
+            </div>
+            <div class="chip" data-filter="image">
+                🖼️ Images <span class="chip-count" id="countImages">0</span>
+            </div>
+            <div class="chip" data-filter="video">
+                🎬 Videos <span class="chip-count" id="countVideos">0</span>
+            </div>
+            <div class="chip" data-filter="audio">
+                🎵 Audio <span class="chip-count" id="countAudio">0</span>
+            </div>
+            <div class="chip" data-filter="document">
+                📄 Docs <span class="chip-count" id="countDocs">0</span>
+            </div>
+        </div>
+
+        <div class="sort-wrap">
+            <div class="file-count" id="fileCount">0 files</div>
+            <select class="sort-select" id="sortSelect">
+                <option value="name">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="date">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="size">Largest first</option>
+                <option value="size-asc">Smallest first</option>
+            </select>
+        </div>
     </div>
 
-    <div class="btn-row">
-        <button class="gallery-btn" id="openFolderBtn">
+    <!-- OPEN BUTTON -->
+    <div class="open-btn-wrap" id="openBtnWrap">
+        <input type="file" id="folderInput" webkitdirectory multiple hidden>
+        <button class="open-btn" id="openFolderBtn">
             📂 Open Folder
         </button>
-        <button class="gallery-btn secondary" id="resetBtn" title="Saved folder hatao">
-            🔄
-        </button>
     </div>
 
-    <!-- Reconnect banner (agar permission expire ho gayi) -->
-    <div class="reconnect-banner" id="reconnectBanner">
-        <span>⚠️ Folder permission expire ho gayi</span>
-        <button class="reconnect-btn" id="reconnectBtn">Reconnect</button>
-    </div>
+    <!-- GRID VIEW -->
+    <div class="file-grid" id="fileGrid"></div>
 
-    <div class="status" id="status"></div>
+    <!-- LIST VIEW -->
+    <div class="file-list" id="fileList"></div>
 
-    <div class="file-grid" id="fileGrid">
-        <div class="empty">
-            <div class="empty-icon">📁</div>
-            <div>Folder select karne ke liye button dabao</div>
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar" id="bottomBar">
+        <div class="selected-info">
+            <span id="selectedCount">0</span> selected
+        </div>
+        <div class="action-btns">
+            <button class="action-btn secondary" id="clearBtn">Clear</button>
+            <button class="action-btn" id="doneBtn">Done</button>
         </div>
     </div>
 
     <script>
         /* ============================================================
-           INDEXEDDB — dirHandle save karne ke liye
+           STATE
            ============================================================ */
-        const DB_NAME = 'gallery_db';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'handles';
-
-        function openDB() {
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open(DB_NAME, DB_VERSION);
-                req.onupgradeneeded = () => {
-                    const db = req.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async function saveHandle(key, handle) {
-            const db = await openDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                tx.objectStore(STORE_NAME).put(handle, key);
-                tx.oncomplete = () => resolve();
-                tx.onerror = () => reject(tx.error);
-            });
-        }
-
-        async function getHandle(key) {
-            const db = await openDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_NAME, 'readonly');
-                const req = tx.objectStore(STORE_NAME).get(key);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async function deleteHandle(key) {
-            const db = await openDB();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                tx.objectStore(STORE_NAME).delete(key);
-                tx.oncomplete = () => resolve();
-                tx.onerror = () => reject(tx.error);
-            });
-        }
+        let allFiles = [];        // All files from folder
+        let filteredFiles = [];   // After filter + search
+        let selectedFiles = new Set();
+        let currentView = 'grid'; // 'grid' or 'list'
+        let currentFilter = 'all';
+        let currentSort = 'name';
 
         /* ============================================================
-           MAIN LOGIC
+           DOM REFS
            ============================================================ */
+        const folderInput = document.getElementById('folderInput');
         const openFolderBtn = document.getElementById('openFolderBtn');
-        const resetBtn = document.getElementById('resetBtn');
         const fileGrid = document.getElementById('fileGrid');
-        const status = document.getElementById('status');
-        const reconnectBanner = document.getElementById('reconnectBanner');
-        const reconnectBtn = document.getElementById('reconnectBtn');
-
-        const HANDLE_KEY = 'saved_gallery_folder';
-        let currentDirHandle = null;
-
-        const isSupported = 'showDirectoryPicker' in window;
-
-        if (!isSupported) {
-            openFolderBtn.disabled = true;
-            openFolderBtn.style.opacity = '0.5';
-            openFolderBtn.textContent = '❌ Not Supported';
-            status.textContent = 'Chrome (Android/Desktop) 132+ chahiye';
-        }
+        const fileList = document.getElementById('fileList');
+        const folderName = document.getElementById('folderName');
+        const fileCount = document.getElementById('fileCount');
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const bottomBar = document.getElementById('bottomBar');
+        const selectedCount = document.getElementById('selectedCount');
+        const clearBtn = document.getElementById('clearBtn');
+        const doneBtn = document.getElementById('doneBtn');
+        const filterChips = document.getElementById('filterChips');
 
         /* ============================================================
-           PAGE LOAD — saved handle check karo
+           FILE TYPE DETECTION
            ============================================================ */
-        async function init() {
-            if (!isSupported) return;
+        const FILE_TYPES = {
+            image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'bmp', 'svg', 'ico'],
+            video: ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'm4v'],
+            audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'],
+            document: ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv', 'md']
+        };
 
-            try {
-                const savedHandle = await getHandle(HANDLE_KEY);
-                if (!savedHandle) {
-                    status.textContent = 'Koi folder saved nahi hai';
-                    return;
-                }
-
-                // Permission status check karo (bina prompt ke)
-                const perm = await savedHandle.queryPermission({ mode: 'read' });
-
-                if (perm === 'granted') {
-                    // ✅ Permission already granted — silently load karo
-                    console.log('✅ Auto-loading saved folder');
-                    status.textContent = '📂 Loading saved folder...';
-                    currentDirHandle = savedHandle;
-                    await loadAllFiles(savedHandle);
-                } else if (perm === 'prompt') {
-                    // ⚠️ Ek baar prompt dikhao reconnect banner ke through
-                    console.log('⚠️ Permission prompt needed');
-                    reconnectBanner.classList.add('show');
-                    status.textContent = 'Reconnect karo apna folder';
-                } else {
-                    // ❌ Denied
-                    console.log('❌ Permission denied');
-                    await deleteHandle(HANDLE_KEY);
-                }
-            } catch (err) {
-                console.warn('Init error:', err);
+        function getFileCategory(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            for (const [category, extensions] of Object.entries(FILE_TYPES)) {
+                if (extensions.includes(ext)) return category;
             }
+            return 'other';
         }
 
-        /* ============================================================
-           OPEN FOLDER — pehli baar ya naya folder
-           ============================================================ */
-        openFolderBtn.addEventListener('click', async () => {
-            if (!isSupported) return;
-
-            try {
-                status.textContent = '📂 Permission maang raha hai...';
-
-                const dirHandle = await window.showDirectoryPicker({
-                    mode: 'read',
-                    startIn: 'pictures'
-                });
-
-                // Save karo — next time yaad rahega
-                await saveHandle(HANDLE_KEY, dirHandle);
-                currentDirHandle = dirHandle;
-
-                console.log('📁 Folder saved:', dirHandle.name);
-                status.textContent = `📂 Loading from: ${dirHandle.name}`;
-                reconnectBanner.classList.remove('show');
-
-                await loadAllFiles(dirHandle);
-
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    status.textContent = 'Cancelled';
-                    return;
-                }
-                console.error('❌ Error:', err);
-                status.textContent = '❌ Error: ' + err.message;
-            }
-        });
-
-        /* ============================================================
-           RECONNECT — sirf permission maango, folder dobara nahi
-           ============================================================ */
-        reconnectBtn.addEventListener('click', async () => {
-            try {
-                const savedHandle = await getHandle(HANDLE_KEY);
-                if (!savedHandle) {
-                    reconnectBanner.classList.remove('show');
-                    return;
-                }
-
-                // Sirf permission maango — folder picker nahi khulega
-                const perm = await savedHandle.requestPermission({ mode: 'read' });
-
-                if (perm === 'granted') {
-                    console.log('✅ Reconnected');
-                    reconnectBanner.classList.remove('show');
-                    status.textContent = '📂 Loading...';
-                    currentDirHandle = savedHandle;
-                    await loadAllFiles(savedHandle);
-                } else {
-                    status.textContent = '❌ Permission denied';
-                    await deleteHandle(HANDLE_KEY);
-                    reconnectBanner.classList.remove('show');
-                }
-            } catch (err) {
-                console.error('Reconnect error:', err);
-                status.textContent = '❌ Error: ' + err.message;
-            }
-        });
-
-        /* ============================================================
-           RESET — saved folder bhool jao
-           ============================================================ */
-        resetBtn.addEventListener('click', async () => {
-            if (!confirm('Saved folder bhool jayein? Next time phir se select karna padega.')) return;
-            await deleteHandle(HANDLE_KEY);
-            currentDirHandle = null;
-            reconnectBanner.classList.remove('show');
-            fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div>Folder select karne ke liye button dabao</div></div>';
-            status.textContent = '✅ Reset ho gaya';
-        });
-
-        /* ============================================================
-           LOAD FILES
-           ============================================================ */
-        async function loadAllFiles(dirHandle) {
-            fileGrid.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading files...</div></div>';
-
-            try {
-                // Verify permission before reading
-                const perm = await dirHandle.queryPermission({ mode: 'read' });
-                if (perm !== 'granted') {
-                    const req = await dirHandle.requestPermission({ mode: 'read' });
-                    if (req !== 'granted') {
-                        fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><div>Permission denied</div></div>';
-                        return;
-                    }
-                }
-
-                const files = [];
-                for await (const entry of dirHandle.values()) {
-                    files.push(entry);
-                }
-
-                // Sort: folders first, then alphabetically
-                files.sort((a, b) => {
-                    if (a.kind === 'directory' && b.kind !== 'directory') return -1;
-                    if (a.kind !== 'directory' && b.kind === 'directory') return 1;
-                    return a.name.localeCompare(b.name);
-                });
-
-                fileGrid.innerHTML = '';
-
-                if (files.length === 0) {
-                    fileGrid.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div>Folder khaali hai</div></div>';
-                    return;
-                }
-
-                let photoCount = 0;
-                let fileCount = 0;
-                let folderCount = 0;
-
-                for (const entry of files) {
-                    if (entry.kind === 'directory') {
-                        addFolderToGrid(entry);
-                        folderCount++;
-                    } else {
-                        const isImage = /\.(jpg|jpeg|png|gif|webp|heic|bmp)$/i.test(entry.name);
-                        if (isImage) {
-                            try {
-                                const file = await entry.getFile();
-                                const url = URL.createObjectURL(file);
-                                addPhotoToGrid(url, entry.name);
-                                photoCount++;
-                            } catch (e) {
-                                console.warn('Skip:', entry.name, e);
-                            }
-                        } else {
-                            addFileToGrid(entry.name);
-                            fileCount++;
-                        }
-                    }
-
-                    // Yield to UI every 20 items
-                    if ((photoCount + fileCount + folderCount) % 20 === 0) {
-                        await new Promise(r => setTimeout(r, 1));
-                    }
-                }
-
-                status.textContent = `✅ ${photoCount} photos • ${fileCount} files • ${folderCount} folders`;
-
-            } catch (err) {
-                console.error('Load error:', err);
-                if (err.name === 'NotAllowedError') {
-                    reconnectBanner.classList.add('show');
-                    status.textContent = '⚠️ Permission expire ho gayi';
-                } else {
-                    status.textContent = '❌ Error: ' + err.message;
-                }
-            }
-        }
-
-        function addPhotoToGrid(url, name) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerHTML = `<img src="${url}" alt="${name}" loading="lazy">`;
-            div.addEventListener('click', () => {
-                document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                console.log('✅ Selected:', name);
-            });
-            fileGrid.appendChild(div);
-        }
-
-        function addFileToGrid(name) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            const ext = name.split('.').pop().toLowerCase();
-            const icon = getFileIcon(ext);
-            div.innerHTML = `<div class="file-icon">${icon}</div><div class="file-name">${name}</div>`;
-            div.addEventListener('click', () => {
-                document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-            });
-            fileGrid.appendChild(div);
-        }
-
-        function addFolderToGrid(entry) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerHTML = `<div class="file-icon">📁</div><div class="file-name">${entry.name}</div>`;
-            div.addEventListener('click', async () => {
-                status.textContent = `📂 Entering: ${entry.name}`;
-                // Sub-folder mein permission same handle se hai
-                await loadAllFiles(entry);
-            });
-            fileGrid.appendChild(div);
-        }
-
-        function getFileIcon(ext) {
+        function getFileIcon(category, ext) {
             const icons = {
-                'pdf': '📄', 'doc': '📝', 'docx': '📝', 'txt': '📃',
-                'mp4': '🎬', 'mov': '🎬', 'avi': '🎬', 'mkv': '🎬',
-                'mp3': '🎵', 'wav': '🎵', 'm4a': '🎵',
-                'zip': '📦', 'rar': '📦', '7z': '📦',
-                'apk': '📱', 'exe': '⚙️'
+                video: '🎬', audio: '🎵', document: '📄',
+                other: '📎', image: '🖼️'
             };
-            return icons[ext] || '📎';
+            const extIcons = {
+                'pdf': '📕', 'doc': '📘', 'docx': '📘', 'txt': '📃',
+                'xls': '📗', 'xlsx': '📗', 'ppt': '📙', 'pptx': '📙',
+                'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+                'apk': '📱', 'exe': '⚙️', 'html': '🌐', 'css': '🎨',
+                'js': '⚡', 'json': '📋', 'xml': '📋'
+            };
+            return extIcons[ext] || icons[category] || '📎';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            const day = 24 * 60 * 60 * 1000;
+
+            if (diff < day) return 'Today';
+            if (diff < 2 * day) return 'Yesterday';
+            if (diff < 7 * day) return Math.floor(diff / day) + 'd ago';
+
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
         }
 
         /* ============================================================
-           INIT
+           OPEN FOLDER
            ============================================================ */
-        init();
+        openFolderBtn.addEventListener('click', () => {
+            folderInput.click();
+        });
+
+        folderInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            // Get folder name from first file's path
+            const firstPath = files[0].webkitRelativePath || '';
+            const folder = firstPath.split('/')[0] || 'Selected Folder';
+            folderName.textContent = folder + ' • ' + files.length + ' items';
+
+            // Hide open button, show files
+            document.getElementById('openBtnWrap').style.display = 'none';
+
+            // Show loading
+            fileGrid.innerHTML = `
+                <div class="loading" style="grid-column: 1/-1;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading files...</div>
+                </div>
+            `;
+
+            // Process files
+            await processFiles(files);
+        });
+
+        async function processFiles(files) {
+            allFiles = [];
+
+            for (const file of files) {
+                const category = getFileCategory(file.name);
+                const ext = file.name.split('.').pop().toLowerCase();
+
+                allFiles.push({
+                    file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    category,
+                    ext,
+                    lastModified: file.lastModified,
+                    path: file.webkitRelativePath
+                });
+            }
+
+            // Update counts
+            updateCategoryCounts();
+
+            // Apply sort + filter
+            applyFiltersAndSort();
+        }
+
+        function updateCategoryCounts() {
+            const counts = { all: allFiles.length, image: 0, video: 0, audio: 0, document: 0 };
+            allFiles.forEach(f => {
+                if (counts[f.category] !== undefined) counts[f.category]++;
+            });
+            document.getElementById('countAll').textContent = counts.all;
+            document.getElementById('countImages').textContent = counts.image;
+            document.getElementById('countVideos').textContent = counts.video;
+            document.getElementById('countAudio').textContent = counts.audio;
+            document.getElementById('countDocs').textContent = counts.document;
+        }
+
+        /* ============================================================
+           FILTER + SORT
+           ============================================================ */
+        function applyFiltersAndSort() {
+            // Filter
+            let result = allFiles;
+
+            if (currentFilter !== 'all') {
+                result = result.filter(f => f.category === currentFilter);
+            }
+
+            // Search
+            const query = searchInput.value.trim().toLowerCase();
+            if (query) {
+                result = result.filter(f => f.name.toLowerCase().includes(query));
+            }
+
+            // Sort
+            result = [...result].sort((a, b) => {
+                switch (currentSort) {
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'name-desc': return b.name.localeCompare(a.name);
+                    case 'date': return b.lastModified - a.lastModified;
+                    case 'date-asc': return a.lastModified - b.lastModified;
+                    case 'size': return b.size - a.size;
+                    case 'size-asc': return a.size - b.size;
+                    default: return 0;
+                }
+            });
+
+            filteredFiles = result;
+            fileCount.textContent = result.length + ' file' + (result.length !== 1 ? 's' : '');
+
+            renderFiles();
+        }
+
+        /* ============================================================
+           RENDER
+           ============================================================ */
+        function renderFiles() {
+            if (filteredFiles.length === 0) {
+                const emptyMsg = searchInput.value.trim()
+                    ? 'Koi file nahi mili'
+                    : 'Is category mein kuch nahi hai';
+
+                fileGrid.innerHTML = `
+                    <div class="empty" style="grid-column: 1/-1;">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-title">${emptyMsg}</div>
+                        <div class="empty-sub">Try different filter or search</div>
+                    </div>
+                `;
+                fileList.innerHTML = '';
+                return;
+            }
+
+            if (currentView === 'grid') {
+                renderGridView();
+            } else {
+                renderListView();
+            }
+        }
+
+        function renderGridView() {
+            fileGrid.innerHTML = '';
+            fileList.classList.remove('show');
+            fileGrid.classList.remove('hide');
+
+            filteredFiles.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                if (selectedFiles.has(item.path)) div.classList.add('selected');
+                div.dataset.path = item.path;
+
+                // Content based on type
+                if (item.category === 'image') {
+                    // Lazy load image thumbnail
+                    const img = document.createElement('img');
+                    img.loading = 'lazy';
+                    img.src = URL.createObjectURL(item.file);
+                    img.onload = () => URL.revokeObjectURL(img.src);
+                    div.appendChild(img);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-icon';
+                    icon.textContent = getFileIcon(item.category, item.ext);
+                    div.appendChild(icon);
+                }
+
+                // Extension badge
+                const extBadge = document.createElement('div');
+                extBadge.className = 'file-ext';
+                extBadge.textContent = item.ext;
+                div.appendChild(extBadge);
+
+                // Select badge
+                const selectBadge = document.createElement('div');
+                selectBadge.className = 'select-badge';
+                selectBadge.textContent = '✓';
+                div.appendChild(selectBadge);
+
+                // Click handler
+                div.addEventListener('click', () => toggleSelect(item.path));
+
+                fileGrid.appendChild(div);
+            });
+        }
+
+        function renderListView() {
+            fileList.innerHTML = '';
+            fileGrid.classList.add('hide');
+            fileList.classList.add('show');
+
+            filteredFiles.forEach((item) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                if (selectedFiles.has(item.path)) div.classList.add('selected');
+
+                // Thumbnail
+                const thumb = document.createElement('div');
+                thumb.className = 'list-thumb';
+                if (item.category === 'image') {
+                    const img = document.createElement('img');
+                    img.loading = 'lazy';
+                    img.src = URL.createObjectURL(item.file);
+                    img.onload = () => URL.revokeObjectURL(img.src);
+                    thumb.appendChild(img);
+                } else {
+                    thumb.textContent = getFileIcon(item.category, item.ext);
+                }
+
+                // Info
+                const info = document.createElement('div');
+                info.className = 'list-info';
+                info.innerHTML = `
+                    <div class="list-name">${item.name}</div>
+                    <div class="list-meta">
+                        <span>${formatBytes(item.size)}</span>
+                        <span class="dot">•</span>
+                        <span>${formatDate(item.lastModified)}</span>
+                    </div>
+                `;
+
+                div.appendChild(thumb);
+                div.appendChild(info);
+
+                div.addEventListener('click', () => toggleSelect(item.path));
+                fileList.appendChild(div);
+            });
+        }
+
+        /* ============================================================
+           SELECTION
+           ============================================================ */
+        function toggleSelect(path) {
+            if (selectedFiles.has(path)) {
+                selectedFiles.delete(path);
+            } else {
+                selectedFiles.add(path);
+            }
+
+            // Update UI
+            document.querySelectorAll('.file-item, .list-item').forEach(el => {
+                const p = el.dataset.path;
+                if (p) {
+                    el.classList.toggle('selected', selectedFiles.has(p));
+                }
+            });
+
+            // Update bottom bar
+            if (selectedFiles.size > 0) {
+                bottomBar.classList.add('show');
+                selectedCount.textContent = selectedFiles.size;
+            } else {
+                bottomBar.classList.remove('show');
+            }
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFiles.clear();
+            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            bottomBar.classList.remove('show');
+        });
+
+        doneBtn.addEventListener('click', () => {
+            const selected = filteredFiles.filter(f => selectedFiles.has(f.path));
+            showToast(`✅ ${selected.length} file(s) selected`);
+            console.log('Selected files:', selected.map(f => f.name));
+            // Yahan apna action — upload, process, etc.
+        });
+
+        /* ============================================================
+           VIEW TOGGLE
+           ============================================================ */
+        gridViewBtn.addEventListener('click', () => {
+            currentView = 'grid';
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            renderFiles();
+        });
+
+        listViewBtn.addEventListener('click', () => {
+            currentView = 'list';
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            renderFiles();
+        });
+
+        /* ============================================================
+           FILTER CHIPS
+           ============================================================ */
+        filterChips.addEventListener('click', (e) => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+
+            currentFilter = chip.dataset.filter;
+            applyFiltersAndSort();
+        });
+
+        /* ============================================================
+           SEARCH + SORT
+           ============================================================ */
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                applyFiltersAndSort();
+            }, 200);
+        });
+
+        sortSelect.addEventListener('change', () => {
+            currentSort = sortSelect.value;
+            applyFiltersAndSort();
+        });
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
